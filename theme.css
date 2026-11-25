@@ -1,0 +1,257 @@
+/* Shared dark research theme. Scientific image and data colours are unchanged. */
+:root {
+  color-scheme: dark;
+  --ink: #edf2ff;
+  --body: #bdc9e4;
+  --muted: #9daecf;
+  --green: #75dcff;
+  --deep: #a9b8ff;
+  --paper: #0c1427;
+  --tint: #15223d;
+  --line: #8eabed30;
+  --sans: Inter, "Segoe UI", Arial, sans-serif;
+  --serif: var(--sans);
+  --surface: #101a30;
+  --surface-raised: #16223b;
+  --accent-gradient: linear-gradient(115deg, #2f64e7, #6151dc 58%, #8745d3);
+}
+
+body {
+  background:
+    radial-gradient(ellipse 68rem 48rem at 8% -6rem, #6840c921, transparent 74%),
+    radial-gradient(ellipse 54rem 42rem at 100% 21rem, #1c9fc616, transparent 76%),
+    #080d20;
+  color: var(--ink);
+}
+::selection { background: #8256d877; color: #fff; }
+a:focus-visible, button:focus-visible, summary:focus-visible,
+input:focus-visible, select:focus-visible, canvas:focus-visible {
+  outline-color: #75dcff;
+}
+.skip:focus { background: #172849; color: #edf2ff; border: 1px solid #7adfff; }
+
+/* Header and title */
+.bar {
+  background: #0a1123ed;
+  border-bottom-color: #8999ed2b;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.brand { font-family: var(--sans); font-weight: 750; color: #e2eaff; }
+.brandmark i {
+  background: #122c50;
+  border-color: #7bdbff;
+  box-shadow: 0 0 10px #3ba9ff18;
+}
+.brandmark i:nth-child(2) { background: #334a8d; border-color: #94b4ff; }
+.brandmark i:nth-child(3) { background: #6e4eb2; border-color: #c3a3ff; }
+.navlinks a { color: #c4d0e8; }
+.navlinks a:hover, .navpaper:hover, .footer a:hover, .textlink:hover {
+  color: #a4eaff;
+}
+.navpaper.resource-label { color: var(--muted); }
+@media (max-width: 780px) {
+  html { scroll-padding-top: 6.8rem; }
+  .bar-inner {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0;
+    padding-top: .72rem;
+  }
+  .bar .brand { font-size: 1.25rem; }
+  .navlinks {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    margin: 0;
+    justify-content: space-between;
+    padding: .55rem 0 .5rem;
+    gap: .35rem;
+  }
+  .navlinks a { font-size: .82rem; }
+  .navpaper { grid-column: 2; grid-row: 1; padding-left: 0; border: 0; }
+}
+h1, h2, h3, h4 { font-family: var(--sans); }
+h2 { font-weight: 650; letter-spacing: -.04em; color: #edf2ff; }
+h3 { font-weight: 650; color: #e3ebfd; }
+.hero-name {
+  font-family: var(--sans);
+  font-weight: 800;
+  letter-spacing: -.065em;
+  color: #a4c5ff;
+  background: linear-gradient(105deg, #73e5ff 9%, #8fb8ff 48%, #b59aff 87%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.hero-title { color: #e6edff; font-weight: 650; line-height: 1.2; }
+.author-list { color: #d4ddf1; }
+.author-list sup, .affiliations sup { color: #8bdcff; }
+.affiliations { color: #aebdd9; }
+.authors { border-color: var(--line); }
+
+/* Actions and navigation controls */
+.btn {
+  background: #14203a;
+  color: #d8e5ff;
+  border-color: #819cef55;
+}
+.btn:hover { background: #1c2c4d; border-color: #94b9ff9c; }
+.btn.primary, #demo-play {
+  background: var(--accent-gradient);
+  color: #fff;
+  border-color: #9c9bff85;
+  box-shadow: 0 4px 20px #4c3fd42b;
+}
+.btn.primary:hover, #demo-play:hover {
+  background: linear-gradient(115deg, #366ced, #6c5ae7 58%, #9454e1);
+  color: #fff;
+  border-color: #c1c5ffbd;
+}
+.btn:disabled, .btn:disabled:hover {
+  background: #111a2b;
+  border-color: #a0b8e52b;
+  color: #92a4c2;
+  box-shadow: none;
+}
+.textlink, .abstract summary, .demo-heading > a { color: #81dfff; }
+.filters button { color: #b3c2df; }
+.filters button:hover { background: #172640; border-color: #7aa7ff65; }
+.filters button[aria-pressed=true] {
+  color: #baedff;
+  border-color: #78cbff8a;
+  background: linear-gradient(110deg, #163a58, #302b58);
+}
+select, .score-controls select, .detail-baseline select, .cloud-chooser select {
+  background: #121f39;
+  color: #deebff;
+  border-color: #819cdf61;
+}
+select option { background: #121f39; color: #e5edff; }
+
+/* SLAM player: the canvases retain their measured data colours. */
+.demo-player {
+  background: #0a1325;
+  color: #e7efff;
+  border-color: #8587eb5c;
+  box-shadow: 0 18px 54px #0005, 0 0 38px #7950df12;
+}
+.demo-toolbar, .demo-transport { background: #111c35; border-color: #98a9e42b; }
+.demo-scene-name h3 { color: #e3edff; }
+#demo-dataset { color: #94dfff; }
+.demo-player button, .demo-player select {
+  background: #7e99e30d;
+  color: #cddcfa;
+  border-color: #91a7e83b;
+}
+.demo-player button:hover, .demo-player select:hover {
+  background: #8ca5f121;
+  border-color: #a6bfff73;
+}
+.demo-player button[aria-pressed=true] {
+  color: #d5f2ff;
+  background: linear-gradient(110deg, #1c3a59, #34305e);
+  border-color: #8cd6ffab;
+}
+.demo-player button:focus-visible, .demo-player select:focus-visible,
+.demo-player input:focus-visible { outline-color: #80dfff; }
+.demo-player #demo-play {
+  background: var(--accent-gradient);
+  color: #fff;
+  border-color: #a7abff91;
+}
+.demo-player #demo-play:hover {
+  background: linear-gradient(115deg, #366ced, #6c5ae7 58%, #9454e1);
+  color: #fff;
+}
+.demo-viewport {
+  background: radial-gradient(ellipse at 50% 40%, #18243e, #0a1222 85%);
+}
+.demo-scene-label { color: #c1d3f4; }
+.demo-orbit-hint { color: #adbfdf; }
+.demo-inset { background: #0b1528; border-color: #9fb5f44f; box-shadow: 0 5px 18px #0007; }
+.demo-inset figcaption { background: #0b1426df; color: #e8f0ff; }
+#demo-progress { accent-color: #97b9ff; }
+#demo-time { color: #d8e5ff; }
+.demo-speed-label { color: #adbedf; }
+.demo-player select option { background: #172541; color: #e7efff; }
+.demo-bottomline { border-color: #91a6df27; color: #a8badb; }
+#demo-status { color: #adbfdf; }
+.demo-bottomline button { color: #a9ddff; background: transparent; }
+.demo-bottomline button:hover { color: #daf2ff; background: transparent; }
+.demo-imu { background: #0c172c; border-color: #97a6e42a; }
+.imu-header h4 { color: #e3edff; }
+#imu-status { color: #adbfdf; }
+.imu-charts figcaption { color: #d6e2f8; }
+.imu-charts figcaption > span { color: #a3b4d5; }
+.imu-charts output { color: #bdccea; }
+.demo-scene {
+  background: #101a2f;
+  color: #e4ecff;
+  border-color: #8298d83b;
+}
+.demo-scene small { color: #a9bbdc; }
+.demo-scene strong { color: #e1eaff; }
+.demo-scene img { background: #0d172c; }
+.demo-scene:hover { background: #16233d; border-color: #a5b1ff94; }
+.demo-scene[aria-pressed=true] {
+  background: linear-gradient(110deg, #142d46, #252342);
+  border-color: #82cbffb3;
+  box-shadow: inset 0 0 0 1px #8ca5f14d, 0 0 18px #6251dc13;
+}
+.demo-caption { color: #a7b7d5; }
+.demo-player:fullscreen { background: #080f20; }
+
+/* Research text and figures. White scientific canvases remain white. */
+.section p { color: var(--body); }
+.overview .lead { font-family: var(--sans); color: #dae5ff; font-weight: 550; }
+.band { background: #0d1629; border-color: var(--line); }
+.comparison figcaption, figcaption, .table-note, .cloud-note { color: var(--muted); }
+.compare-stage, .detail-card .compare-stage, .pipeline-wrap { background: #fff; border-color: #8298d857; }
+.compare-stage:focus-within { outline-color: #75dcff; }
+.comp-tag { background: #0d1736e6; color: #edf4ff; }
+.divider { background: #e7efff; }
+.divider i { background: #edf3ff; color: #20365b; box-shadow: 0 1px 9px #0a102a66; }
+.scale-title { color: #dae5ff; }
+.error-legend, .ruler-name, .ruler-ticks { color: #b4c4e2; }
+.ruler-bar { border-color: #a1b5df58; }
+.detail-card figcaption { font-family: var(--sans); color: #e0eaff; font-weight: 600; }
+.detail-card figcaption span, .detail-methods { color: #adbedc; }
+.detail-methods span:last-child { color: #9ae4ff; }
+.detail-baseline label { color: #b2c2e0; }
+.method-steps h3 { color: #dfe9ff; }
+
+/* Reconstruction gallery and the original point-cloud chooser. */
+.scene { background: #101a30; border-color: #8ca4e03b; }
+.scene:hover { border-color: #81d5ffae; }
+.scene img { background: #f8f9fc; }
+.scene > span { color: #dce8ff; border-top-color: #8aa4dd35; }
+.scene small { color: #a8bada; }
+.cloud-box { background: #101a30; border-color: #8da7ec4f; }
+.cloud-top { background: #13203a; border-color: var(--line); }
+.cloud-screen { background: radial-gradient(ellipse at 50% 60%, #172644, #0e172b 78%); }
+.cloud-note { background: #101a30; border-color: var(--line); }
+.cloud-screen canvas:focus-visible { outline-color: #80dfff; }
+
+/* Quantitative results, image lightbox and footer. */
+.scoreboard { background: #101a30; border-color: #8ea5e24d; }
+.score-controls { background: #13203a; }
+.score-controls label { color: #dbe7ff; }
+th, td { border-top-color: #8ba7df2b; }
+thead { background: #18294b; color: #d8e5ff; }
+tbody th { color: #d2dff8; }
+tbody td { color: #b9c9e7; }
+tbody tr:nth-child(even) { background: #abc5ff04; }
+tbody tr:hover { background: #759ee610; }
+tbody td:nth-child(3) { color: #9fe5ff; background: #559cff08; }
+tbody td:last-child { color: #c2b1ff; }
+.table-note { background: #101a30; border-color: #91a8df30; }
+dialog { background: #111b31; color: #e5edff; border-color: #8da8ed61; box-shadow: 0 25px 100px #0009; }
+dialog::backdrop { background: #040819df; }
+dialog img { background: #fff; }
+.lightbox-head h3 { color: #e3edff; }
+.lightbox-head button { background: #1b2b49; color: #dce8ff; border-color: #91a9e258; }
+.lightbox-head button:hover { background: #263b61; }
+.footer { border-top-color: #8ea7e431; color: #aebfdd; }
+.footer .brand { color: #e0e9ff; }

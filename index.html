@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#fafbf9">
+  <meta name="theme-color" content="#080d20">
   <meta name="description" content="ProManO uses visual–inertial anchors to recover metric 3D maps from feed-forward geometry. Explore reconstructions and compare alignment across four benchmarks.">
   <link rel="canonical" href="https://h0xg.github.io/ProManO/">
   <meta property="og:title" content="ProManO · Beyond Sim(3)">
@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="viewer.css">
   <link rel="stylesheet" href="demo.css">
+  <link rel="stylesheet" href="theme.css">
   <script defer src="site.js"></script>
   <script defer src="viewer.js"></script>
   <script defer src="imu.js"></script>
@@ -236,15 +237,7 @@
     <div class="scoreboard"><div class="score-controls"><label for="predictor">Feed-forward model</label><select id="predictor"><option value="nested">DA3-Nested</option><option value="large">DA3-LARGE</option><option value="pi3x">Pi3X</option><option value="vggt">VGGT-Ω</option></select></div>
     <table><caption class="sr-only">Mean reconstruction F₁ in percent, by dataset and alignment method</caption><thead><tr><th scope="col">Dataset</th><th scope="col">Sim(3)</th><th scope="col">ProManO</th><th scope="col">Δ (pp)</th></tr></thead><tbody id="scores"><tr><th scope="row">EuRoC</th><td>49.87</td><td>53.99</td><td>+4.12</td></tr><tr><th scope="row">CID-SIMS</th><td>40.49</td><td>45.24</td><td>+4.75</td></tr><tr><th scope="row">Oxford Spires</th><td>50.97</td><td>60.74</td><td>+9.77</td></tr><tr><th scope="row">KITTI-360</th><td>24.85</td><td>29.09</td><td>+4.24</td></tr></tbody></table><p class="table-note" id="score-note" aria-live="polite">Table VII · DA3-Nested · Δ in percentage points</p></div>
   </div></section>
-  <section id="citation" class="shell section citation"><div class="sectionhead"><h2>Cite ProManO</h2><div class="cite-actions"><a class="textlink" href="promano.bib" download>Download .bib</a><button id="copy-citation" class="btn">Copy BibTeX</button></div></div><details><summary>BibTeX entry</summary><pre><code id="bibtex-source">@unpublished{hu2026promano,
-  title  = {{ProManO}: Beyond {Sim(3)} for Metric Upgrade of
-            Feed-Forward Geometry with Visual-Inertial Anchors},
-  author = {Hu, Lingxiang and Zhao, Zhenjun and Shao, Qi and
-            Aitoufroukh, Naima and Bonardi, Fabien and Ghandour, Raymond
-            and Yuan, Shenghai and Civera, Javier and Huang, Baoru},
-  year   = {2026},
-  note   = {Preprint}
-}</code></pre></details><span role="status" id="copy-status"></span></section>
+
 </main>
 <footer class="shell footer"><a class="brand" href="#top">ProManO</a><div><a href="#top">Back to top</a></div></footer>
 <dialog id="lightbox" aria-labelledby="dialog-caption"><div class="lightbox-head"><h3 id="dialog-caption"></h3><button type="button" id="close-lightbox" aria-label="Close image">Close</button></div><img id="dialog-image" alt=""></dialog>

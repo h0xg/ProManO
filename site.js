@@ -101,22 +101,3 @@ predictor.addEventListener('change', () => {
   });
   document.querySelector('#score-note').textContent = 'Table VII · ' + predictor.selectedOptions[0].textContent + ' · Δ in percentage points';
 });
-
-const copyButton = document.querySelector('#copy-citation');
-copyButton.addEventListener('click', async () => {
-  const source = document.querySelector('#bibtex-source');
-  const status = document.querySelector('#copy-status');
-  try {
-    await navigator.clipboard.writeText(source.textContent);
-    status.textContent = 'Citation copied.';
-  } catch {
-    const details = source.closest('details');
-    if (details) details.open = true;
-    const range = document.createRange();
-    range.selectNodeContents(source);
-    const selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
-    status.textContent = 'Citation selected. Use Copy in your browser.';
-  }
-});

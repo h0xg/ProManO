@@ -66,7 +66,7 @@
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw Error("Viewer initialization failed.");
     gl.useProgram(program);
     gl.enable(gl.DEPTH_TEST);
-    gl.clearColor(.965, .976, .970, 1);
+    gl.clearColor(.035, .055, .08, 1);
     const maps = [gl.createBuffer(), gl.createBuffer()];
     const attr = ["aPosition", "aColor"].map(name => gl.getAttribLocation(program, name));
     const uniform = Object.fromEntries(["Center","Right","Up","TowardCamera","Scale","PointSize"]
