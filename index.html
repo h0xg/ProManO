@@ -5,34 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#fafbf9">
   <meta name="description" content="ProManO uses visual–inertial anchors to recover metric 3D maps from feed-forward geometry. Explore reconstructions and compare alignment across four benchmarks.">
+  <link rel="canonical" href="https://h0xg.github.io/ProManO/">
+  <meta property="og:title" content="ProManO · Beyond Sim(3)">
+  <meta property="og:description" content="Watch real SLAM sequence replays and explore metric 3D reconstructions from visual–inertial anchors.">
+  <meta property="og:url" content="https://h0xg.github.io/ProManO/">
+  <meta property="og:image" content="https://h0xg.github.io/ProManO/assets/hero-oxford.png">
   <title>ProManO · Beyond Sim(3) for Metric Upgrade of Feed-Forward Geometry</title>
   <link rel="icon" href="assets/favicon.png" type="image/png">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="viewer.css">
+  <link rel="stylesheet" href="demo.css">
   <script defer src="site.js"></script>
   <script defer src="viewer.js"></script>
+  <script defer src="imu.js"></script>
+  <script defer src="demo.js"></script>
 </head>
 <body>
-<a class="skip" href="#overview">Skip to content</a>
+<a class="skip" href="#slam-demo">Skip to content</a>
 <header class="bar">
   <nav class="shell bar-inner" aria-label="Primary">
     <a class="brand" href="#top" aria-label="ProManO home"><span class="brandmark" aria-hidden="true"><i></i><i></i><i></i></span>ProManO</a>
-    <div class="navlinks"><a href="#overview">Overview</a><a href="#method">Method</a><a href="#reconstructions">Reconstructions</a><a href="#results">Results</a></div>
+    <div class="navlinks"><a href="#slam-demo">Demos</a><a href="#overview">Overview</a><a href="#method">Method</a><a href="#reconstructions">Reconstructions</a><a href="#results">Results</a></div>
     <span class="navpaper resource-label" aria-disabled="true">Paper <span class="file-icon" aria-hidden="true"></span></span>
   </nav>
 </header>
 <main id="top">
-  <section class="hero shell" aria-labelledby="paper-title">
+  <section class="hero shell demo-intro" aria-labelledby="paper-title">
     <div class="hero-lead">
       <h1 id="paper-title"><span class="hero-name">ProManO</span><span class="hero-title">Beyond Sim(3) for Metric Upgrade of Feed-Forward Geometry with Visual-Inertial Anchors</span></h1>
-      <div class="actions"><button class="btn" type="button" disabled><span class="file-icon" aria-hidden="true"></span>Paper</button><button class="btn" type="button" disabled><span aria-hidden="true">&lt;/&gt;</span>Code</button><a class="btn" href="#reconstructions"><span class="cube" aria-hidden="true">◇</span>Explore reconstructions</a></div>
+      <div class="actions"><button class="btn" type="button" disabled><span class="file-icon" aria-hidden="true"></span>Paper</button><button class="btn" type="button" disabled><span aria-hidden="true">&lt;/&gt;</span>Code</button><a class="btn primary" href="#slam-demo">Watch SLAM replays</a><a class="btn" href="#reconstructions">Explore reconstructions</a></div>
     </div>
-    <figure class="hero-map">
-      <img src="assets/hero-oxford.png" alt="Oblique Oxford Spires reconstruction showing connected courtyards and the estimated camera trajectory." fetchpriority="high">
-      <figcaption><span><span class="legend-dot" aria-hidden="true"></span> Oxford Spires · Courtyard reconstruction</span><span class="pose-key"><i aria-hidden="true"></i>Camera trajectory</span></figcaption>
-    </figure>
+
   </section>
-  <section class="authors shell" aria-label="Authors and affiliations">
+  <section class="authors shell demo-authors" aria-label="Authors and affiliations">
     <p class="author-list"><span>Lingxiang Hu<sup>1</sup></span><span>Zhenjun Zhao<sup>2</sup></span><span>Qi Shao<sup>3</sup></span><span>Naima Aitoufroukh<sup>1</sup></span><span>Fabien Bonardi<sup>1</sup></span><span>Raymond Ghandour<sup>4</sup></span><span>Shenghai Yuan<sup>5</sup></span><span>Javier Civera<sup>2</sup></span><span>Baoru Huang<sup>3</sup></span></p>
     <ol class="affiliations" role="list" aria-label="Author affiliations">
       <li><sup>1</sup> Université Paris-Saclay, Univ Évry, IBISC, France</li>
@@ -41,6 +46,46 @@
       <li><sup>4</sup> American University of the Middle East, Kuwait</li>
       <li><sup>5</sup> Nanyang Technological University, Singapore</li>
     </ol>
+  </section>
+  <section id="slam-demo" class="shell slam-demos" aria-labelledby="demo-heading">
+    <div class="demo-heading">
+      <div><h2 id="demo-heading">From images and IMU to a metric map</h2><p>Replay real sequences: camera images and inertial signals alongside a growing 3D map.</p></div>
+      <a href="#reconstructions">Explore the full reconstructions</a>
+    </div>
+    <div class="demo-player" id="demo-player">
+      <div class="demo-toolbar">
+        <div class="demo-scene-name"><span id="demo-dataset">ProManO</span><h3 id="demo-name">SLAM sequence replays</h3></div>
+        <div class="demo-view-actions" role="group" aria-label="Reconstruction view">
+          <button id="demo-follow" type="button" aria-pressed="false">Follow camera</button>
+          <button id="demo-reset" type="button">Reset view</button>
+          <button id="demo-fullscreen" type="button" aria-label="Expand reconstruction player">Expand</button>
+        </div>
+      </div>
+      <div class="demo-viewport">
+        <img id="demo-poster" alt="" hidden>
+        <canvas id="demo-canvas" tabindex="0" aria-label="Interactive progressive reconstruction and camera trajectory replay. Drag or use arrow keys to orbit; plus and minus to zoom; Home to reset."></canvas>
+        <span class="demo-scene-label">RECONSTRUCTION REPLAY</span><span class="demo-orbit-hint">Drag to orbit · Scroll to zoom</span>
+        <figure class="demo-inset demo-global"><figcaption>GLOBAL</figcaption><canvas id="demo-overview" aria-label="Top-down map growing with the replayed camera trajectory"></canvas></figure>
+        <figure class="demo-inset demo-input"><figcaption>INPUT CAMERA</figcaption><video id="demo-input" muted playsinline preload="metadata" aria-label="Original input camera images synchronized with the trajectory"></video></figure>
+      </div>
+      <section class="demo-imu" id="demo-imu" aria-labelledby="imu-heading">
+        <div class="imu-header"><h4 id="imu-heading">Input IMU</h4><span class="imu-legend"><span class="imu-x">x</span><span class="imu-y">y</span><span class="imu-z">z</span></span><p id="imu-status" role="status">Loading recorded IMU…</p></div>
+        <div class="imu-charts">
+          <figure><figcaption>Acceleration <span>m/s²</span><output id="imu-accel-value" aria-label="Current acceleration x, y and z">—</output></figcaption><canvas id="imu-accel" aria-label="Recorded accelerometer x, y and z, synchronized with reconstruction playback"></canvas></figure>
+          <figure><figcaption>Angular velocity <span>rad/s</span><output id="imu-gyro-value" aria-label="Current angular velocity x, y and z">—</output></figcaption><canvas id="imu-gyro" aria-label="Recorded gyroscope x, y and z, synchronized with reconstruction playback"></canvas></figure>
+        </div>
+      </section>
+      <div class="demo-transport">
+        <button id="demo-play" type="button" disabled>Play</button>
+        <input id="demo-progress" type="range" min="0" max="1000" value="0" step="1" aria-label="Replay position" disabled>
+        <output id="demo-time">00:00 / 00:20</output>
+        <label class="demo-speed-label"><span>Speed</span><select id="demo-speed" aria-label="Replay speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+      </div>
+      <div class="demo-bottomline"><p id="demo-status" role="status" aria-live="polite">Loading sequence replays…</p><div class="demo-sequence-actions"><button id="demo-prev" type="button" aria-label="Previous sequence">Previous</button><button id="demo-next" type="button" aria-label="Next sequence">Next</button></div></div>
+    </div>
+    <div id="demo-scenes" class="demo-scenes" role="group" aria-label="Choose a SLAM replay"></div>
+    <p class="demo-caption">Reconstruction replay from recorded keyframes, with the final ProManO calibration applied. Points appear in capture order; the input camera, trajectory and IMU share the same timeline. Each sequence is accelerated to 20 seconds.</p>
+    <noscript><p>Enable JavaScript to play the synchronized SLAM replays. Static results are available in the <a href="#reconstructions">sequence gallery</a>.</p></noscript>
   </section>
   <section id="overview" class="shell section overview">
     <div class="overview-intro"><h2>Why go beyond similarity?</h2>
