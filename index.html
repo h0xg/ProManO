@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fafbf9">
+  <meta name="description" content="ProManO uses visual–inertial anchors to recover metric 3D maps from feed-forward geometry. Explore reconstructions and compare alignment across four benchmarks.">
+  <title>ProManO · Beyond Sim(3) for Metric Upgrade of Feed-Forward Geometry</title>
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="viewer.css">
+  <script defer src="site.js"></script>
+  <script defer src="viewer.js"></script>
+</head>
+<body>
+<a class="skip" href="#overview">Skip to content</a>
+<header class="bar">
+  <nav class="shell bar-inner" aria-label="Primary">
+    <a class="brand" href="#top" aria-label="ProManO home"><span class="brandmark" aria-hidden="true"><i></i><i></i><i></i></span>ProManO</a>
+    <div class="navlinks"><a href="#overview">Overview</a><a href="#method">Method</a><a href="#reconstructions">Reconstructions</a><a href="#results">Results</a></div>
+    <span class="navpaper resource-label" aria-disabled="true">Paper <span class="file-icon" aria-hidden="true"></span></span>
+  </nav>
+</header>
+<main id="top">
+  <section class="hero shell" aria-labelledby="paper-title">
+    <div class="hero-lead">
+      <h1 id="paper-title"><span class="hero-name">ProManO</span><span class="hero-title">Beyond Sim(3) for Metric Upgrade of Feed-Forward Geometry with Visual-Inertial Anchors</span></h1>
+      <div class="actions"><button class="btn" type="button" disabled><span class="file-icon" aria-hidden="true"></span>Paper</button><button class="btn" type="button" disabled><span aria-hidden="true">&lt;/&gt;</span>Code</button><a class="btn" href="#reconstructions"><span class="cube" aria-hidden="true">◇</span>Explore reconstructions</a></div>
+    </div>
+    <figure class="hero-map">
+      <img src="assets/hero-oxford.png" alt="Oblique Oxford Spires reconstruction showing connected courtyards and the estimated camera trajectory." fetchpriority="high">
+      <figcaption><span><span class="legend-dot" aria-hidden="true"></span> Oxford Spires · Courtyard reconstruction</span><span class="pose-key"><i aria-hidden="true"></i>Camera trajectory</span></figcaption>
+    </figure>
+  </section>
+  <section class="authors shell" aria-label="Authors and affiliations">
+    <p class="author-list"><span>Lingxiang Hu<sup>1</sup></span><span>Zhenjun Zhao<sup>2</sup></span><span>Qi Shao<sup>3</sup></span><span>Naima Aitoufroukh<sup>1</sup></span><span>Fabien Bonardi<sup>1</sup></span><span>Raymond Ghandour<sup>4</sup></span><span>Shenghai Yuan<sup>5</sup></span><span>Javier Civera<sup>2</sup></span><span>Baoru Huang<sup>3</sup></span></p>
+    <ol class="affiliations" role="list" aria-label="Author affiliations">
+      <li><sup>1</sup> Université Paris-Saclay, Univ Évry, IBISC, France</li>
+      <li><sup>2</sup> Universidad de Zaragoza, Spain</li>
+      <li><sup>3</sup> University of Liverpool, UK</li>
+      <li><sup>4</sup> American University of the Middle East, Kuwait</li>
+      <li><sup>5</sup> Nanyang Technological University, Singapore</li>
+    </ol>
+  </section>
+  <section id="overview" class="shell section overview">
+    <div class="overview-intro"><h2>Why go beyond similarity?</h2>
+    <p class="lead">A trajectory can have the right scale while a distant wall still lands in the wrong place.</p>
+    <p>A global similarity aligns scale, rotation and translation. It can still leave errors that grow with depth. ProManO uses sparse metric anchors from RGB and IMU to correct dense geometry along viewing rays while preserving the calibrated camera intrinsics.</p>
+    <details class="abstract"><summary>Read the abstract</summary>
+    <p>Upgrading feed-forward geometry to metric scale with visual-inertial odometry raises the question of which correction should align dense predictions with sparse metric anchors. The transformations compatible with pre-calibrated intrinsics form a ten-dimensional manifold. Beyond Sim(3), three degrees of freedom locate the plane at infinity. They are invisible in image projections and require metric depth along rays or multi-view constraints to resolve. ProManO estimates the correction using along-ray uncertainty and inlier probabilities in an expectation-maximization procedure. It certifies the similarity synchronization and refines the plane at infinity where it is observable. Experiments on EuRoC, CID-SIMS, Oxford Spires and KITTI-360 show higher mean reconstruction F₁ than Sim(3) alignment on all four datasets.</p></details></div>
+    <figure class="comparison"><div class="compare-stage" id="compare-stage"><img src="assets/promano-detail.png" alt="Façade reconstruction after ProManO correction." loading="lazy"><div class="compare-base" aria-hidden="true"><img src="assets/sim3-detail.png" alt="" loading="lazy"></div><span class="comp-tag tag-left">Ours w/ Sim(3)</span><span class="comp-tag tag-right">ProManO</span><span class="divider" aria-hidden="true"><i>‹ ›</i></span><input type="range" id="compare" min="0" max="100" value="50" aria-label="Compare Sim(3) alignment on the left and ProManO on the right"></div>
+    <figcaption>
+      <div class="error-legend facade-legend" id="facade-legend">
+        <div class="scale-block">
+          <strong class="scale-title">Distance to LiDAR ground truth (m)</strong>
+          <div class="ruler-bar" aria-hidden="true"><img src="assets/facade-error-scale.png" alt=""></div>
+          <div class="ruler-ticks"><span style="--pos:0%">0</span><span style="--pos:50%">1.5</span><span style="--pos:100%">≥3</span></div>
+        </div>
+        <span class="gray-key"><i aria-hidden="true"></i>Gray · LiDAR ground truth</span>
+      </div>
+      Drag to compare the same Oxford façade.<br><a class="textlink region-jump" href="#comparisons">Compare eight more regions ↓</a>
+    </figcaption></figure>
+  </section>
+  <section id="comparisons" class="shell section detail-section" aria-labelledby="comparison-heading">
+    <div class="sectionhead"><h2 id="comparison-heading">Reconstruction close-ups</h2></div>
+    <p class="detail-guide"><span id="compare-instruction">Drag to compare</span> the same region. Blue indicates lower surface error and red higher.</p>
+    <div class="detail-controls">
+      <div class="filters detail-filters" role="group" aria-label="Filter close-ups by dataset">
+        <button type="button" data-detail-filter="all" aria-pressed="true">All scenes</button>
+        <button type="button" data-detail-filter="KITTI-360" aria-pressed="false">KITTI-360</button>
+        <button type="button" data-detail-filter="Oxford Spires" aria-pressed="false">Oxford Spires</button>
+        <button type="button" data-detail-filter="CID-SIMS" aria-pressed="false">CID-SIMS</button>
+      </div>
+      <div class="detail-baseline"><label for="detail-method">Compare ProManO with</label><select id="detail-method"><option value="sim3">Ours w/ Sim(3)</option><option value="scarf">Ours w/ ScaRF-SLAM</option></select></div>
+    </div>
+    <div class="error-legend details-legend" id="surface-legend" role="group" aria-label="Surface error color scale">
+      <div class="scale-block">
+        <strong class="scale-title">Distance from ground truth to reconstruction (m)</strong>
+        <div class="ruler-bar" aria-hidden="true"><img src="assets/surface-error-scale.png" alt=""></div>
+        <div class="ruler-row" data-scale-for="outdoor"><span class="ruler-name">Outdoor</span><div class="ruler-ticks"><span style="--pos:0%">0</span><span style="--pos:20%">0.2</span><span style="--pos:50%">0.5</span><span style="--pos:100%">≥1</span></div></div>
+        <div class="ruler-row" data-scale-for="indoor"><span class="ruler-name">Indoor</span><div class="ruler-ticks"><span style="--pos:0%">0</span><span style="--pos:25%">0.05</span><span style="--pos:50%">0.1</span><span style="--pos:100%">≥0.2</span></div></div>
+      </div>
+      <span class="gray-key"><i aria-hidden="true"></i><span>Gray · Ground-truth surface missed by all three methods</span></span>
+    </div>
+    <p class="sr-only" id="compare-key" aria-live="polite">Left: Ours w/ Sim(3). Right: ProManO.</p>
+    <div class="detail-grid">
+      <figure class="detail-card" data-dataset="KITTI-360">
+        <figcaption id="label-kitti0000-a"><span>KITTI-360</span>Drive 0000 · Region A</figcaption>
+        <div class="detail-methods" aria-hidden="true"><span class="baseline-name">Ours w/ Sim(3)</span><span>ProManO</span></div>
+        <div class="compare-stage" style="aspect-ratio:398/106">
+          <img src="assets/cmp-kitti0000-a-promano.png" width="398" height="106" alt="ProManO reconstruction of KITTI-360 · Drive 0000 · Region A." loading="lazy">
+          <div class="compare-base" aria-hidden="true"><img src="assets/cmp-kitti0000-a-sim3.png" data-sim3="assets/cmp-kitti0000-a-sim3.png" data-scarf="assets/cmp-kitti0000-a-scarf.png" width="398" height="106" alt="" loading="lazy"></div>
+          <span class="divider" aria-hidden="true"><i>‹ ›</i></span>
+          <input type="range" min="0" max="100" value="50" aria-labelledby="compare-instruction label-kitti0000-a" aria-describedby="compare-key">
+        </div>
+      </figure>
+      <figure class="detail-card" data-dataset="KITTI-360">
+        <figcaption id="label-kitti0000-b"><span>KITTI-360</span>Drive 0000 · Region B</figcaption>
+        <div class="detail-methods" aria-hidden="true"><span class="baseline-name">Ours w/ Sim(3)</span><span>ProManO</span></div>
+        <div class="compare-stage" style="aspect-ratio:398/106">
+          <img src="assets/cmp-kitti0000-b-promano.png" width="398" height="106" alt="ProManO reconstruction of KITTI-360 · Drive 0000 · Region B." loading="lazy">
+          <div class="compare-base" aria-hidden="true"><img src="assets/cmp-kitti0000-b-sim3.png" data-sim3="assets/cmp-kitti0000-b-sim3.png" data-scarf="assets/cmp-kitti0000-b-scarf.png" width="398" height="106" alt="" loading="lazy"></div>
+          <span class="divider" aria-hidden="true"><i>‹ ›</i></span>
+          <input type="range" min="0" max="100" value="50" aria-labelledby="compare-instruction label-kitti0000-b" aria-describedby="compare-key">
+        </div>
+      </figure>
+      <figure class="detail-card" data-dataset="KITTI-360">
+        <figcaption id="label-kitti0009-a"><span>KITTI-360</span>Drive 0009 · Region A</figcaption>
+        <div class="detail-methods" aria-hidden="true"><span class="baseline-name">Ours w/ Sim(3)</span><span>ProManO</span></div>
+        <div class="compare-stage" style="aspect-ratio:397/106">
+          <img src="assets/cmp-kitti0009-a-promano.png" width="397" height="106" alt="ProManO reconstruction of KITTI-360 · Drive 0009 · Region A." loading="lazy">
+          <div class="compare-base" aria-hidden="true"><img src="assets/cmp-kitti0009-a-sim3.png" data-sim3="assets/cmp-kitti0009-a-sim3.png" data-scarf="assets/cmp-kitti0009-a-scarf.png" width="397" height="106" alt="" loading="lazy"></div>
+          <span class="divider" aria-hidden="true"><i>‹ ›</i></span>
+          <input type="range" min="0" max="100" value="50" aria-labelledby="compare-instruction label-kitti0009-a" aria-describedby="compare-key">
+        </div>
+      </figure>
+      <figure class="detail-card" data-dataset="KITTI-360">
+        <figcaption id="label-kitti0009-b"><span>KITTI-360</span>Drive 0009 · Region B</figcaption>
+        <div class="detail-methods" aria-hidden="true"><span class="baseline-name">Ours w/ Sim(3)</span><span>ProManO</span></div>
+        <div class="compare-stage" style="aspect-ratio:398/106">
+          <img src="assets/cmp-kitti0009-b-promano.png" width="398" height="106" alt="ProManO reconstruction of KITTI-360 · Drive 0009 · Region B." loading="lazy">
+          <div class="compare-base" aria-hidden="true"><img src="assets/cmp-kitti0009-b-sim3.png" data-sim3="assets/cmp-kitti0009-b-sim3.png" data-scarf="assets/cmp-kitti0009-b-scarf.png" width="398" height="106" alt="" loading="lazy"></div>
+          <span class="divider" aria-hidden="true"><i>‹ ›</i></span>
+          <input type="range" min="0" max="100" value="50" aria-labelledby="compare-instruction label-kitti0009-b" aria-describedby="compare-key">
+        </div>
+      </figure>
+      <figure class="detail-card" data-dataset="Oxford Spires">
+        <figcaption id="label-oxford-cc02-a"><span>Oxford Spires</span>Christ Church 02 · Region A</figcaption>
+        <div class="detail-methods" aria-hidden="true"><span class="baseline-name">Ours w/ Sim(3)</span><span>ProManO</span></div>
+        <div class="compare-stage" style="aspect-ratio:298/174">
+          <img src="assets/cmp-oxford-cc02-a-promano.png" width="298" height="174" alt="ProManO reconstruction of Oxford Spires · Christ Church 02 · Region A." loading="lazy">
+          <div class="compare-base" aria-hidden="true"><img src="assets/cmp-oxford-cc02-a-sim3.png" data-sim3="assets/cmp-oxford-cc02-a-sim3.png" data-scarf="assets/cmp-oxford-cc02-a-scarf.png" width="298" height="174" alt="" loading="lazy"></div>
+          <span class="divider" aria-hidden="true"><i>‹ ›</i></span>
+          <input type="range" min="0" max="100" value="50" aria-labelledby="compare-instruction label-oxford-cc02-a" aria-describedby="compare-key">
+        </div>
+      </figure>
+      <figure class="detail-card" data-dataset="Oxford Spires">
+        <figcaption id="label-oxford-cc02-b"><span>Oxford Spires</span>Christ Church 02 · Region B</figcaption>
+        <div class="detail-methods" aria-hidden="true"><span class="baseline-name">Ours w/ Sim(3)</span><span>ProManO</span></div>
+        <div class="compare-stage" style="aspect-ratio:298/174">
+          <img src="assets/cmp-oxford-cc02-b-promano.png" width="298" height="174" alt="ProManO reconstruction of Oxford Spires · Christ Church 02 · Region B." loading="lazy">
+          <div class="compare-base" aria-hidden="true"><img src="assets/cmp-oxford-cc02-b-sim3.png" data-sim3="assets/cmp-oxford-cc02-b-sim3.png" data-scarf="assets/cmp-oxford-cc02-b-scarf.png" width="298" height="174" alt="" loading="lazy"></div>
+          <span class="divider" aria-hidden="true"><i>‹ ›</i></span>
+          <input type="range" min="0" max="100" value="50" aria-labelledby="compare-instruction label-oxford-cc02-b" aria-describedby="compare-key">
+        </div>
+      </figure>
+      <figure class="detail-card" data-dataset="Oxford Spires">
+        <figcaption id="label-oxford-cc03"><span>Oxford Spires</span>Christ Church 03</figcaption>
+        <div class="detail-methods" aria-hidden="true"><span class="baseline-name">Ours w/ Sim(3)</span><span>ProManO</span></div>
+        <div class="compare-stage" style="aspect-ratio:298/174">
+          <img src="assets/cmp-oxford-cc03-promano.png" width="298" height="174" alt="ProManO reconstruction of Oxford Spires · Christ Church 03." loading="lazy">
+          <div class="compare-base" aria-hidden="true"><img src="assets/cmp-oxford-cc03-sim3.png" data-sim3="assets/cmp-oxford-cc03-sim3.png" data-scarf="assets/cmp-oxford-cc03-scarf.png" width="298" height="174" alt="" loading="lazy"></div>
+          <span class="divider" aria-hidden="true"><i>‹ ›</i></span>
+          <input type="range" min="0" max="100" value="50" aria-labelledby="compare-instruction label-oxford-cc03" aria-describedby="compare-key">
+        </div>
+      </figure>
+      <figure class="detail-card" data-dataset="CID-SIMS">
+        <figcaption id="label-cid-floor3"><span>CID-SIMS</span>Floor 3</figcaption>
+        <div class="detail-methods" aria-hidden="true"><span class="baseline-name">Ours w/ Sim(3)</span><span>ProManO</span></div>
+        <div class="compare-stage" style="aspect-ratio:243/174">
+          <img src="assets/cmp-cid-floor3-promano.png" width="243" height="174" alt="ProManO reconstruction of CID-SIMS · Floor 3." loading="lazy">
+          <div class="compare-base" aria-hidden="true"><img src="assets/cmp-cid-floor3-sim3.png" data-sim3="assets/cmp-cid-floor3-sim3.png" data-scarf="assets/cmp-cid-floor3-scarf.png" width="243" height="174" alt="" loading="lazy"></div>
+          <span class="divider" aria-hidden="true"><i>‹ ›</i></span>
+          <input type="range" min="0" max="100" value="50" aria-labelledby="compare-instruction label-cid-floor3" aria-describedby="compare-key">
+        </div>
+      </figure>
+    </div>
+  </section>
+  <section id="method" class="band"><div class="shell section">
+    <div class="sectionhead"><h2>Method</h2><a href="assets/pipeline.png" class="textlink">Open full diagram</a></div>
+    <figure class="pipeline-wrap"><img src="assets/pipeline.png" loading="lazy" alt="ProManO pipeline showing visual-inertial anchor construction, local probabilistic submap alignment and global intrinsics-consistent optimization."></figure>
+    <div class="method-steps"><article><h3>Metric anchors</h3><p>A sliding-window visual–inertial frontend estimates metric 3D points, their along-ray covariances and inlier priors.</p></article><article><h3>Local alignment</h3><p>Each dense submap is aligned to the anchors by EM. Marginalizing the plane-at-infinity parameter accounts for uncertainty during this local update.</p></article><article><h3>Global correction</h3><p>Anchor, overlap and loop factors connect the submaps. The backend certifies the similarity update and refines the plane at infinity where the data constrain it.</p></article></div>
+  </div></section>
+  <section id="reconstructions" class="shell section">
+    <div class="sectionhead"><h2>Reconstructions</h2></div>
+    <div class="cloud-box" id="cloud-box" hidden><div class="cloud-top"><h3 id="cloud-name">Interactive point cloud</h3><button id="reset-view" class="textlink" hidden>Reset view</button></div><div class="cloud-screen"><canvas id="cloud-canvas" tabindex="0" aria-label="Interactive 3D reconstruction. Use arrow keys to rotate, plus or minus to zoom, and Home to reset."></canvas><button id="start-3d" class="btn primary">Load 3D view</button></div><p class="cloud-note" id="cloud-note" aria-live="polite">Drag to orbit. Scroll or pinch to zoom.</p></div>
+    <div class="gallery-heading"><h3>Sequence gallery</h3><div class="filters" role="group" aria-label="Filter reconstructions by dataset"><button type="button" data-filter="all" aria-pressed="true">All scenes</button><button type="button" data-filter="euroc" aria-pressed="false">EuRoC</button><button type="button" data-filter="cid" aria-pressed="false">CID-SIMS</button><button type="button" data-filter="oxford" aria-pressed="false">Oxford Spires</button><button type="button" data-filter="kitti" aria-pressed="false">KITTI-360</button></div></div>
+    <div class="gallery" id="scene-gallery">
+      <a class="scene" data-set="euroc" href="assets/euroc-v102.png"><img src="assets/euroc-v102.png" alt="EuRoC V1_02_medium room reconstruction" loading="lazy"><span><small>EuRoC</small>V1_02_medium</span></a>
+      <a class="scene" data-set="cid" href="assets/cid-apartment3.png"><img src="assets/cid-apartment3.png" alt="CID-SIMS Apartment 3 reconstruction" loading="lazy"><span><small>CID-SIMS</small>Apartment 3</span></a>
+      <a class="scene" data-set="oxford" href="assets/oxford-keble05.png"><img src="assets/oxford-keble05.png" alt="Oxford Spires Keble College 05 reconstruction" loading="lazy"><span><small>Oxford Spires</small>Keble College 05</span></a>
+      <a class="scene" data-set="kitti" href="assets/kitti-0000.png"><img src="assets/kitti-0000.png" alt="KITTI-360 drive 0000 street network reconstruction" loading="lazy"><span><small>KITTI-360</small>Drive 0000</span></a>
+      <a class="scene" data-set="euroc" href="assets/euroc-v201.png"><img src="assets/euroc-v201.png" alt="EuRoC V2_01_easy room reconstruction" loading="lazy"><span><small>EuRoC</small>V2_01_easy</span></a>
+      <a class="scene" data-set="cid" href="assets/cid-floor14.png"><img src="assets/cid-floor14.png" alt="CID-SIMS Floor 14 corridor reconstruction" loading="lazy"><span><small>CID-SIMS</small>Floor 14</span></a>
+      <a class="scene" data-set="oxford" href="assets/oxford-observatory02.png"><img src="assets/oxford-observatory02.png" alt="Oxford Spires Observatory Quarter 02 reconstruction" loading="lazy"><span><small>Oxford Spires</small>Observatory Quarter 02</span></a>
+      <a class="scene" data-set="kitti" href="assets/kitti-0009.png"><img src="assets/kitti-0009.png" alt="KITTI-360 drive 0009 street network reconstruction" loading="lazy"><span><small>KITTI-360</small>Drive 0009</span></a>
+    </div>
+  </section>
+  <section id="results" class="band"><div class="shell section results-grid">
+    <div><h2>Reconstruction results</h2><p>How much does the alignment change the final map? Each pair uses the same feed-forward predictor and frontend trajectory.</p><p>Mean F₁ is evaluated at 5 cm indoors and 20 cm outdoors. Higher is better.</p></div>
+    <div class="scoreboard"><div class="score-controls"><label for="predictor">Feed-forward model</label><select id="predictor"><option value="nested">DA3-Nested</option><option value="large">DA3-LARGE</option><option value="pi3x">Pi3X</option><option value="vggt">VGGT-Ω</option></select></div>
+    <table><caption class="sr-only">Mean reconstruction F₁ in percent, by dataset and alignment method</caption><thead><tr><th scope="col">Dataset</th><th scope="col">Sim(3)</th><th scope="col">ProManO</th><th scope="col">Δ (pp)</th></tr></thead><tbody id="scores"><tr><th scope="row">EuRoC</th><td>49.87</td><td>53.99</td><td>+4.12</td></tr><tr><th scope="row">CID-SIMS</th><td>40.49</td><td>45.24</td><td>+4.75</td></tr><tr><th scope="row">Oxford Spires</th><td>50.97</td><td>60.74</td><td>+9.77</td></tr><tr><th scope="row">KITTI-360</th><td>24.85</td><td>29.09</td><td>+4.24</td></tr></tbody></table><p class="table-note" id="score-note" aria-live="polite">Table VII · DA3-Nested · Δ in percentage points</p></div>
+  </div></section>
+  <section id="citation" class="shell section citation"><div class="sectionhead"><h2>Cite ProManO</h2><div class="cite-actions"><a class="textlink" href="promano.bib" download>Download .bib</a><button id="copy-citation" class="btn">Copy BibTeX</button></div></div><details><summary>BibTeX entry</summary><pre><code id="bibtex-source">@unpublished{hu2026promano,
+  title  = {{ProManO}: Beyond {Sim(3)} for Metric Upgrade of
+            Feed-Forward Geometry with Visual-Inertial Anchors},
+  author = {Hu, Lingxiang and Zhao, Zhenjun and Shao, Qi and
+            Aitoufroukh, Naima and Bonardi, Fabien and Ghandour, Raymond
+            and Yuan, Shenghai and Civera, Javier and Huang, Baoru},
+  year   = {2026},
+  note   = {Preprint}
+}</code></pre></details><span role="status" id="copy-status"></span></section>
+</main>
+<footer class="shell footer"><a class="brand" href="#top">ProManO</a><div><a href="#top">Back to top</a></div></footer>
+<dialog id="lightbox" aria-labelledby="dialog-caption"><div class="lightbox-head"><h3 id="dialog-caption"></h3><button type="button" id="close-lightbox" aria-label="Close image">Close</button></div><img id="dialog-image" alt=""></dialog>
+</body>
+</html>
