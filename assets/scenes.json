@@ -1,0 +1,30 @@
+[
+  {
+    "name": "Oxford Spires · Keble College 05",
+    "file": "assets/scene.bin",
+    "preview": "assets/oxford-keble05.png",
+    "count": 90000,
+    "metresPerUnit": 79.60875075
+  },
+  {
+    "name": "EuRoC · V1_02_medium",
+    "file": "assets/scene-euroc.bin",
+    "preview": "assets/euroc-v102.png",
+    "count": 90000,
+    "metresPerUnit": 7.36534157
+  },
+  {
+    "name": "CID-SIMS · Apartment 3",
+    "file": "assets/scene-cid.bin",
+    "preview": "assets/cid-apartment3.png",
+    "count": 90000,
+    "metresPerUnit": 7.80621861
+  },
+  {
+    "name": "KITTI-360 · Drive 0000",
+    "file": "assets/scene-kitti.bin",
+    "preview": "assets/kitti-0000.png",
+    "count": 90000,
+    "metresPerUnit": 559.29612463
+  }
+]
