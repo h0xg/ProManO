@@ -1,0 +1,143 @@
+/* Quantitative results: shared 0–100 axes and explicit numeric values. */
+.quantitative {
+  --quant-label-width: 150px;
+  --quant-value-width: 50px;
+  --quant-bar-gap: .65rem;
+  --quant-prior: #8293b0;
+  --quant-sim3: #86b9ec;
+  --quant-scarf: #b4a0df;
+  --quant-ours: linear-gradient(90deg, #74d0ef, #8faff6 55%, #ac91ed);
+}
+.quant-heading { max-width: 960px; }
+.quant-heading h2 { color: #edf2ff; }
+.quant-heading p { max-width: 88ch; margin-top: .9rem; color: #bdcce6; font-size: 1rem; line-height: 1.65; }
+.quant-legend { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1.35rem; margin-top: 1.2rem; color: #c5d3ec; font-size: .93rem; line-height: 1.5; }
+.quant-legend > span { display: inline-flex; align-items: center; gap: .45rem; }
+.quant-legend i { display: inline-block; width: 20px; height: 12px; flex: none; border-radius: 2px; }
+.quant-legend .legend-prior { background: var(--quant-prior); }
+.quant-legend .legend-sim3 { background: var(--quant-sim3); }
+.quant-legend .legend-scarf { background: var(--quant-scarf); }
+.quant-legend .legend-ours { background: var(--quant-ours); }
+.quant-mode-controls, .quant-datasets { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem; }
+.quant-mode-controls { margin: 1.25rem 0 1.2rem; }
+.quant-mode-controls button, .quant-datasets button {
+  min-height: 44px;
+  padding: .45rem .85rem;
+  border: 1px solid #8ca5df50;
+  border-radius: 5px;
+  background: #121e35;
+  color: #bdcde9;
+  font: 550 .94rem/1.5 var(--sans);
+}
+.quant-mode-controls button:hover, .quant-datasets button:hover { background: #1b2a46; border-color: #a4b9f58c; color: #e0eaff; }
+.quant-mode-controls button[aria-pressed=true], .quant-datasets button[aria-pressed=true] {
+  border-color: #9fb7efb3;
+  background: linear-gradient(110deg, #1a3551, #2d2b50);
+  color: #deefff;
+}
+.quant-mode-controls button:focus-visible, .quant-datasets button:focus-visible { outline-color: #80dfff; }
+.quant-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; align-items: start; }
+#quant-benchmarks { margin-top: 1.2rem; }
+.quant-card .quant-unit { margin-bottom: .75rem; color: #b8c9e5; font-size: .875rem; }
+.quant-card { min-width: 0; padding: 1.2rem; border: 1px solid #8ba4da3b; border-radius: 8px; background: #101a2e; }
+.quant-card > header { margin-bottom: 1rem; }
+.quant-card header h3 { color: #e1eaff; font: 650 1.2rem/1.35 var(--sans); letter-spacing: -.02em; }
+.quant-card .quant-meta { margin-top: .3rem; color: #a9bbda; font-size: .8125rem; line-height: 1.5; }
+.quant-bars { display: grid; gap: .48rem; margin: 0; padding: 0; list-style: none; }
+.quant-bar-row {
+  --quant-fill: var(--quant-prior);
+  --quant-method-ink: #c1cde3;
+  display: grid;
+  grid-template-columns: var(--quant-label-width) minmax(0, 1fr) var(--quant-value-width);
+  align-items: center;
+  gap: var(--quant-bar-gap);
+  min-height: 27px;
+}
+.kind-prior { --quant-fill: var(--quant-prior); --quant-method-ink: #bdcbe4; }
+.kind-sim3 { --quant-fill: var(--quant-sim3); --quant-method-ink: #c2dfff; }
+.kind-scarf { --quant-fill: var(--quant-scarf); --quant-method-ink: #d2c3f3; }
+.kind-ours { --quant-fill: var(--quant-ours); --quant-method-ink: #ddf2ff; }
+.quant-method { min-width: 0; color: var(--quant-method-ink); font-size: .9rem; line-height: 1.4; overflow-wrap: anywhere; }
+.quant-bar-track {
+  display: block;
+  height: 14px;
+  min-width: 0;
+  border-radius: 2px;
+  background-color: #18263f;
+  background-image: linear-gradient(to right, #abc2ec32 1px, transparent 1px);
+  background-size: 25% 100%;
+  overflow: hidden;
+}
+.quant-bar-fill { display: block; height: 100%; border-radius: 2px; background: var(--quant-fill, var(--quant-prior)); }
+.quant-value { min-width: 0; color: #d1def4; font: 550 .9rem/1.4 var(--sans); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.quant-bar-row.kind-ours .quant-method, .quant-bar-row.kind-ours .quant-value { color: #d7f0ff; font-weight: 650; }
+.quant-bar-row.is-status .quant-bar-track { background: transparent; }
+.quant-bar-row.is-status .quant-bar-fill { display: none; }
+.quant-bar-row.is-status .quant-value { color: #aabbd6; }
+.quant-axis {
+  display: flex;
+  justify-content: space-between;
+  gap: .25rem;
+  margin: .6rem calc(var(--quant-value-width) + var(--quant-bar-gap)) 0 calc(var(--quant-label-width) + var(--quant-bar-gap));
+  color: #9bb0d2;
+  font: .78125rem/1.4 var(--sans);
+  font-variant-numeric: tabular-nums;
+}
+.quant-card .quant-card-note { margin-top: .8rem; color: #adbfdd; font-size: .9rem; line-height: 1.55; }
+.quant-highlights { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.8rem; margin-top: 1.8rem; padding-top: 1.5rem; border-top: 1px solid #8ba5dd30; }
+.quant-highlights article { min-width: 0; }
+.quant-highlights strong { display: block; color: #c6d5ff; font: 650 clamp(1.9rem, 3vw, 2.6rem)/1.15 var(--sans); letter-spacing: -.045em; font-variant-numeric: tabular-nums; }
+.quant-highlights article > span { display: block; margin-top: .45rem; color: #d5e2fa; font-size: .95rem; font-weight: 600; line-height: 1.45; }
+.quant-highlights p { margin-top: .4rem; color: #adbfdd; font-size: 1rem; line-height: 1.55; }
+
+.quant-generalization { margin-top: 2.7rem; padding-top: 2rem; border-top: 1px solid #8ca5dd38; }
+.quant-generalization > header h3 { color: #e3ecff; font: 650 clamp(1.4rem, 2vw, 1.8rem)/1.25 var(--sans); letter-spacing: -.025em; }
+.quant-generalization > header p { max-width: 89ch; margin-top: .7rem; color: #b9c9e4; font-size: 1rem; line-height: 1.65; }
+.quant-datasets { margin: 1.15rem 0 .45rem; }
+.predictor-comparison { min-width: 0; }
+.predictor-row { padding: 1.1rem 0; border-bottom: 1px solid #8da7df2b; }
+.predictor-row > header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .4rem 1rem; margin-bottom: .65rem; }
+.predictor-row header h4 { margin: 0; color: #dce8ff; font: 650 1.05rem/1.4 var(--sans); letter-spacing: -.015em; }
+.quant-gain { color: #c5b6ff; font: 650 1rem/1.4 var(--sans); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.predictor-row .quant-bar-row + .quant-bar-row { margin-top: .45rem; }
+.quantitative .quant-protocol { max-width: 105ch; margin-top: 1.1rem; color: #aebfdd; font-size: 1rem; line-height: 1.65; }
+.quantitative .quant-status { margin-top: .75rem; color: #b9cbed; font-size: .94rem; line-height: 1.55; }
+
+/* Neutral table cells override the original two-method table's column colours. */
+.quant-exact { margin-top: 1.6rem; padding-top: 1rem; border-top: 1px solid #8aa5dc2e; }
+.quant-exact > summary { width: fit-content; min-height: 44px; padding-block: .5rem; color: #92dcff; font: 600 1rem/1.5 var(--sans); }
+.quant-table-wrap { max-width: 100%; margin-top: .75rem; overflow-x: auto; border: 1px solid #88a3dc3d; border-radius: 6px; background: #101a2e; }
+.quant-table-wrap table { width: 100%; min-width: 560px; font-size: .9rem; font-variant-numeric: tabular-nums; }
+.quant-table-wrap caption { padding: .75rem .9rem; color: #b8c9e6; font-size: .9rem; line-height: 1.5; text-align: left; }
+.quant-table-wrap thead { background: #182747; }
+.quant-table-wrap th, .quant-table-wrap td { padding: .6rem .75rem; border-color: #8aa5dc2d; }
+.quant-table-wrap thead th { color: #d3e0f8; font-size: .875rem; font-weight: 600; white-space: nowrap; }
+.quant-table-wrap th:first-child { min-width: 155px; text-align: left; }
+.quant-table-wrap tbody th { color: #c6d5ee; font-weight: 500; }
+.quant-table-wrap tbody td,
+.quant-table-wrap tbody td:nth-child(3),
+.quant-table-wrap tbody td:last-child { color: #bdcde7; background: transparent; font-weight: 500; }
+.quant-table-wrap tbody tr.quant-row-ours > th,
+.quant-table-wrap tbody tr.quant-row-ours > td { color: #d5efff; background: #68baff0c; font-weight: 650; }
+.quant-table-wrap tbody td.quant-cell-ours { color: #c4e8ff; font-weight: 650; }
+.quant-table-wrap tbody td.quant-cell-gain { color: #c6b6ff; }
+
+@media (max-width: 900px) {
+  .quant-grid { grid-template-columns: minmax(0, 1fr); }
+  .quant-card { padding: 1.15rem; }
+  .quant-highlights { gap: 1.1rem; }
+}
+@media (max-width: 550px) {
+  .quantitative { --quant-label-width: 114px; --quant-value-width: 42px; --quant-bar-gap: .5rem; }
+  .quant-legend { gap: .55rem 1rem; font-size: .9rem; }
+  .quant-card { padding: .9rem; }
+  .quant-card header h3 { font-size: 1.15rem; }
+  .quant-bars { gap: .55rem; }
+  .quant-method, .quant-value { font-size: .875rem; }
+  .quant-axis { font-size: .75rem; }
+  .quant-highlights { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; margin-top: 1.5rem; }
+  .quant-highlights strong { font-size: 2rem; }
+  .quant-generalization { margin-top: 2.1rem; padding-top: 1.6rem; }
+  .quant-mode-controls button, .quant-datasets button { padding-inline: .7rem; font-size: .9rem; }
+  .quant-table-wrap th, .quant-table-wrap td { padding: .55rem .65rem; }
+}

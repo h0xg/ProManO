@@ -13,7 +13,7 @@ A static research project website for *ProManO: Beyond Sim(3) for Metric Upgrade
 - Reconstruction comparisons combine the Oxford façade and eight Figure 5 close-ups in one grid with shared dataset and baseline controls. The façade supports Sim(3) only and is hidden for ScaRF-SLAM; the other eight support both baselines. Each card retains its original local error scale: façade 0–3 m, outdoor close-ups 0–1 m, and indoor close-ups 0–0.2 m. Gray means LiDAR ground truth in the façade and ground-truth surface missed by all three methods in the close-ups.
 - The sequence gallery contains eight top-down reconstructions from the paper. Colored camera poses show the estimated trajectory.
 - The interactive viewer loads one scene on demand. Each preview samples 90,000 points from a ProManO reconstruction, retaining the original point colors. The four binary assets total 3.24 MB.
-- The results selector reproduces the four feed-forward models in Table VII. Differences are reported in percentage points.
+- Quantitative results use fixed 0–100 F₁ charts for the ten methods in Tables 2–3, with a filter for the three mapping variants that share the frontend. Each dataset card states its sequence count and evaluation threshold. Tracking failures and unreported values remain distinct states. A second interactive view compares four predictors on each dataset using Table 4, with gains in percentage points. Charts and expandable exact-value tables read the same audited `quantitative-data.js` source.
 
 ## Updating a 3D preview
 

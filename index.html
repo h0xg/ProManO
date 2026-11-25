@@ -18,7 +18,10 @@
   <link rel="stylesheet" href="theme.css">
   <link rel="stylesheet" href="geometry.css">
   <link rel="stylesheet" href="comparison.css">
+  <link rel="stylesheet" href="quantitative.css">
   <script defer src="site.js"></script>
+  <script defer src="quantitative-data.js"></script>
+  <script defer src="quantitative.js"></script>
   <script defer src="geometry.js"></script>
   <script defer src="viewer.js"></script>
   <script defer src="imu.js"></script>
@@ -336,10 +339,27 @@
       <a class="scene" data-set="kitti" href="assets/kitti-0009.png"><img src="assets/kitti-0009.png" alt="KITTI-360 drive 0009 street network reconstruction" loading="lazy"><span><small>KITTI-360</small>Drive 0009</span></a>
     </div>
   </section>
-  <section id="results" class="band"><div class="shell section results-grid">
-    <div><h2>Reconstruction results</h2><p>How much does the alignment change the final map? Each pair uses the same feed-forward predictor and frontend trajectory.</p><p>Mean F₁ is evaluated at 5 cm indoors and 20 cm outdoors. Higher is better.</p></div>
-    <div class="scoreboard"><div class="score-controls"><label for="predictor">Feed-forward model</label><select id="predictor"><option value="nested">DA3-Nested</option><option value="large">DA3-LARGE</option><option value="pi3x">Pi3X</option><option value="vggt">VGGT-Ω</option></select></div>
-    <table><caption class="sr-only">Mean reconstruction F₁ in percent, by dataset and alignment method</caption><thead><tr><th scope="col">Dataset</th><th scope="col">Sim(3)</th><th scope="col">ProManO</th><th scope="col">Δ (pp)</th></tr></thead><tbody id="scores"><tr><th scope="row">EuRoC</th><td>49.87</td><td>53.99</td><td>+4.12</td></tr><tr><th scope="row">CID-SIMS</th><td>40.49</td><td>45.24</td><td>+4.75</td></tr><tr><th scope="row">Oxford Spires</th><td>50.97</td><td>60.74</td><td>+9.77</td></tr><tr><th scope="row">KITTI-360</th><td>24.85</td><td>29.09</td><td>+4.24</td></tr></tbody></table><p class="table-note" id="score-note" aria-live="polite">Table VII · DA3-Nested · Δ in percentage points</p></div>
+  <section id="results" class="band" aria-labelledby="results-heading"><div class="shell section quantitative">
+    <header class="quant-heading"><h2 id="results-heading">Quantitative Results</h2><p>Reconstruction quality across four datasets, followed by a controlled comparison across four feed-forward geometry predictors.</p></header>
+    <div class="quant-legend" aria-label="Benchmark method colors"><span><i class="legend-prior" aria-hidden="true"></i>Prior systems</span><span><i class="legend-sim3" aria-hidden="true"></i>Ours w/ Sim(3)</span><span><i class="legend-scarf" aria-hidden="true"></i>Ours w/ ScaRF-SLAM</span><span><i class="legend-ours" aria-hidden="true"></i>ProManO</span></div>
+    <div class="quant-mode-controls" role="group" aria-label="Choose benchmark comparison"><button type="button" data-quant-group="all" aria-pressed="true">Full comparison</button><button type="button" data-quant-group="backend" aria-pressed="false">Same frontend</button></div>
+    <p id="quant-comparison-note" class="quant-protocol">Paper-reported dataset means. Our three mapping variants use DA3-Nested with the same visual–inertial frontend trajectory.</p>
+    <div id="quant-benchmarks" class="quant-grid"></div>
+    <p class="quant-protocol">All charts use a fixed 0–100 F₁ scale. Evaluation uses Sim(3) alignment for VO methods and SE(3) for VIO methods, following the paper’s protocol. This evaluation alignment is separate from the mapping backend name. <strong>×</strong> indicates at least one tracking failure in the dataset; <strong>—</strong> indicates a result not reported. Neither is a zero score.</p>
+    <details class="quant-exact"><summary>View exact benchmark values</summary><div id="quant-benchmark-table" class="quant-table-wrap"></div></details>
+    <div id="quant-highlights" class="quant-highlights" aria-label="Results at a glance"></div>
+
+    <section class="quant-generalization" aria-labelledby="quant-generalization-heading">
+      <header><h3 id="quant-generalization-heading">Generalization across feed-forward geometry</h3><p>Change the dataset to compare the same-predictor Sim(3) variant and ProManO for each geometry model.</p></header>
+      <div class="quant-datasets" role="group" aria-label="Choose a dataset for predictor comparison"><button type="button" data-quant-dataset="euroc" aria-pressed="true">EuRoC</button><button type="button" data-quant-dataset="cid" aria-pressed="false">CID-SIMS</button><button type="button" data-quant-dataset="oxford" aria-pressed="false">Oxford Spires</button><button type="button" data-quant-dataset="kitti" aria-pressed="false">KITTI-360</button></div>
+      <p id="quant-dataset-caption" class="quant-protocol">EuRoC · mean F₁ (%) @ 5 cm · higher is better</p>
+      <div class="quant-legend" aria-label="Predictor comparison colors"><span><i class="legend-sim3" aria-hidden="true"></i>Ours w/ Sim(3)</span><span><i class="legend-ours" aria-hidden="true"></i>ProManO</span></div>
+      <div id="quant-predictors" class="predictor-comparison"></div>
+      <p class="quant-protocol">Table 4 · keyframes, VIO trajectories, loop closures, submap partition, anchors, solver and evaluation protocol are held fixed. Gains are percentage points, calculated from the reported two-decimal means. Changing this dataset view does not change the default DA3-Nested system results above.</p>
+      <details class="quant-exact"><summary>View exact predictor values</summary><div id="quant-predictor-table" class="quant-table-wrap"></div></details>
+    </section>
+    <p id="quant-status" class="quant-status sr-only" role="status" aria-live="polite"></p>
+    <noscript><div class="quant-table-wrap"><table><caption>DA3-Nested · mean reconstruction F₁ (%) · Table 4. Enable JavaScript for the full charts and dataset controls.</caption><thead><tr><th scope="col">Dataset</th><th scope="col">Ours w/ Sim(3)</th><th scope="col">ProManO</th></tr></thead><tbody><tr><th scope="row">EuRoC</th><td>49.87</td><td>53.99</td></tr><tr><th scope="row">CID-SIMS</th><td>40.49</td><td>45.24</td></tr><tr><th scope="row">Oxford Spires</th><td>50.97</td><td>60.74</td></tr><tr><th scope="row">KITTI-360</th><td>24.85</td><td>29.09</td></tr></tbody></table></div></noscript>
   </div></section>
 
 </main>

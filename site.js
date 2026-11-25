@@ -113,22 +113,3 @@ lightbox.addEventListener('close', () => {
   dialogImage.removeAttribute('src');
   if (activeScene) activeScene.focus();
 });
-
-const scores = {
-  nested: [[49.87,53.99],[40.49,45.24],[50.97,60.74],[24.85,29.09]],
-  large: [[43.32,49.60],[33.33,37.23],[48.52,57.83],[22.32,28.68]],
-  pi3x: [[49.56,52.67],[40.29,44.11],[59.63,64.32],[25.11,29.69]],
-  vggt: [[46.32,48.53],[36.65,40.99],[58.69,62.97],[24.77,28.85]]
-};
-const predictor = document.querySelector('#predictor');
-predictor.addEventListener('change', () => {
-  const cohort = scores[predictor.value];
-  const rows = document.querySelectorAll('#scores tr');
-  cohort.forEach(([similarity, full], index) => {
-    const cells = rows[index].querySelectorAll('td');
-    cells[0].textContent = similarity.toFixed(2);
-    cells[1].textContent = full.toFixed(2);
-    cells[2].textContent = '+' + (full - similarity).toFixed(2);
-  });
-  document.querySelector('#score-note').textContent = 'Table VII · ' + predictor.selectedOptions[0].textContent + ' · Δ in percentage points';
-});
