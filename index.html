@@ -16,7 +16,9 @@
   <link rel="stylesheet" href="viewer.css">
   <link rel="stylesheet" href="demo.css">
   <link rel="stylesheet" href="theme.css">
+  <link rel="stylesheet" href="geometry.css">
   <script defer src="site.js"></script>
+  <script defer src="geometry.js"></script>
   <script defer src="viewer.js"></script>
   <script defer src="imu.js"></script>
   <script defer src="demo.js"></script>
@@ -90,10 +92,75 @@
   </section>
   <section id="overview" class="shell section overview">
     <div class="overview-intro"><h2>Why go beyond similarity?</h2>
-    <p class="lead">A trajectory can have the right scale while a distant wall still lands in the wrong place.</p>
-    <p>A global similarity aligns scale, rotation and translation. It can still leave errors that grow with depth. ProManO uses sparse metric anchors from RGB and IMU to correct dense geometry along viewing rays while preserving the calibrated camera intrinsics.</p>
+    <p class="lead">One global scale cannot fix a distortion that changes with depth.</p>
+    <p>Sim(3) moves and rescales the whole scene. A full SL(4) projective model adds freedom that can also change camera calibration. ProManO keeps the three extra depth modes compatible with the calibrated camera, using metric visual–inertial anchors to resolve them.</p>
     <details class="abstract"><summary>Read the abstract</summary>
     <p>Upgrading feed-forward geometry to metric scale with visual-inertial odometry raises the question of which correction should align dense predictions with sparse metric anchors. The transformations compatible with pre-calibrated intrinsics form a ten-dimensional manifold. Beyond Sim(3), three degrees of freedom locate the plane at infinity. They are invisible in image projections and require metric depth along rays or multi-view constraints to resolve. ProManO estimates the correction using along-ray uncertainty and inlier probabilities in an expectation-maximization procedure. It certifies the similarity synchronization and refines the plane at infinity where it is observable. Experiments on EuRoC, CID-SIMS, Oxford Spires and KITTI-360 show higher mean reconstruction F₁ than Sim(3) alignment on all four datasets.</p></details></div>
+    <figure class="geometry-explainer" aria-labelledby="geometry-heading">
+      <header class="geometry-heading"><h3 id="geometry-heading">The difference is in what may move</h3><p>The same predicted points, viewed through one reference camera.</p></header>
+      <div class="geometry-legend" aria-label="Diagram legend"><span><i class="key-input" aria-hidden="true"></i>Input prediction</span><span><i class="key-target" aria-hidden="true"></i>Metric reference</span><span><i class="key-result" aria-hidden="true"></i>Transformed point</span><span>K · camera intrinsics</span></div>
+      <div class="geometry-panels">
+        <article class="geometry-panel geometry-sim3">
+          <header class="geometry-panel-title"><h4 id="geometry-sim3-title">Sim(3)</h4><span class="geometry-dof">7 DoF</span></header>
+          <p class="geometry-tagline">One scale for the whole scene</p>
+          <button class="geometry-toggle" data-geometry-toggle type="button" disabled>Show prediction</button>
+          <svg class="geometry-svg" viewBox="0 0 330 310" role="img" aria-labelledby="geometry-sim3-title geometry-sim3-desc" data-geometry-model="sim3">
+            <desc id="geometry-sim3-desc">A similarity uses a common rotation, translation and scale. In this example its best fit leaves near and far points displaced from metric references because it cannot undo the non-uniform depth distortion.</desc>
+            <defs><marker id="geometry-arrow-sim3" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L6 3L0 6" fill="none" stroke="#79d8ff"/></marker></defs>
+            <text x="16" y="25" class="g-label">Rotate · translate · scale uniformly</text>
+            <g class="geometry-reference"></g><g class="geometry-moving"></g>
+            <text x="110" y="100" class="g-label">near</text><text x="179" y="68" class="g-label">mid</text><text x="283" y="48" class="g-label">far</text>
+            <g class="geometry-calibration"></g><text x="271" y="282" class="g-label">K</text>
+            <text x="16" y="282" class="g-label">Depth mismatch remains</text>
+            <rect x="222" y="259" width="36" height="36" rx="3" fill="none" stroke="#719cca" stroke-dasharray="3 3" opacity=".5"/>
+          </svg>
+          <div class="geometry-formula"><code>X′ = sRX + t</code></div>
+          <p class="geometry-note">Calibration stays fixed, but one common scale cannot correct the unequal spacing of near and far geometry.</p>
+          <div class="geometry-spacebar" role="img" aria-label="7 similarity parameters"><span class="space-sim">7</span></div>
+        </article>
+        <article class="geometry-panel geometry-sl4">
+          <header class="geometry-panel-title"><h4 id="geometry-sl4-title">SL(4)</h4><span class="geometry-dof">15 DoF</span></header>
+          <p class="geometry-tagline">Full projective freedom</p>
+          <button class="geometry-toggle" data-geometry-toggle type="button" disabled>Show prediction</button>
+          <svg class="geometry-svg" viewBox="0 0 330 310" role="img" aria-labelledby="geometry-sl4-title geometry-sl4-desc" data-geometry-model="sl4">
+            <desc id="geometry-sl4-desc">A general projective transformation includes the same depth correction, plus five calibration modes. This panel illustrates one allowed shear and stretch that changes calibration; it is not an inevitable outcome of SL(4).</desc>
+            <defs><marker id="geometry-arrow-sl4" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L6 3L0 6" fill="none" stroke="#ffc28c"/></marker></defs>
+            <text x="16" y="25" class="g-label">Also allows calibration to change</text>
+            <g class="geometry-reference"></g><g class="geometry-moving"></g>
+            <text x="110" y="100" class="g-label">near</text><text x="179" y="68" class="g-label">mid</text><text x="283" y="48" class="g-label">far</text>
+            <g class="geometry-calibration"></g><text x="271" y="282" class="g-label">K′</text>
+            <text x="16" y="282" class="g-label">Calibration can change</text>
+            <rect x="222" y="259" width="36" height="36" rx="3" fill="none" stroke="#719cca" stroke-dasharray="3 3" opacity=".5"/>
+          </svg>
+          <div class="geometry-formula"><code>X̃′ ∝ HX̃</code></div>
+          <p class="geometry-note">Includes five calibration modes beyond the fixed-intrinsics family. Known camera intrinsics are not enforced.</p>
+          <div class="geometry-spacebar" role="img" aria-label="7 similarity plus 3 depth plus 5 calibration parameters"><span class="space-sim">7</span><span class="space-ray">3</span><span class="space-cal">5</span></div>
+        </article>
+        <article class="geometry-panel geometry-ours">
+          <header class="geometry-panel-title"><h4 id="geometry-ours-title">ProManO <small>Ours</small></h4><span class="geometry-dof">10 DoF</span></header>
+          <p class="geometry-tagline">Correct depth; keep calibration</p>
+          <button class="geometry-toggle" data-geometry-toggle type="button" disabled>Show prediction</button>
+          <svg class="geometry-svg" viewBox="0 0 330 310" role="img" aria-labelledby="geometry-ours-title geometry-ours-desc" data-geometry-model="ours">
+            <desc id="geometry-ours-desc">The three additional plane-at-infinity coefficients move predicted points along their camera rays onto metric references. The image grid remains unchanged. One shared inverse-depth shift is illustrated here.</desc>
+            <defs><marker id="geometry-arrow-ours" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L6 3L0 6" fill="none" stroke="#bca6ff"/></marker></defs>
+            <text x="16" y="25" class="g-label">Same pixel · corrected metric depth</text>
+            <g class="geometry-reference"></g><g class="geometry-moving"></g>
+            <text x="110" y="100" class="g-label">near</text><text x="179" y="68" class="g-label">mid</text><text x="283" y="48" class="g-label">far</text>
+            <g class="geometry-calibration"></g><text x="271" y="282" class="g-label">K</text>
+            <text x="16" y="282" class="g-label">Points move along their rays</text>
+            <rect x="222" y="259" width="36" height="36" rx="3" fill="none" stroke="#719cca" stroke-dasharray="3 3" opacity=".5"/>
+          </svg>
+          <div class="geometry-formula"><code>ρ′ = ρ + q₁x + q₂y + q₃</code></div>
+          <p class="geometry-note">A similarity plus three shared plane-at-infinity parameters. Near and far depths can change by different amounts while K stays fixed.</p>
+          <div class="geometry-spacebar" role="img" aria-label="7 similarity plus 3 depth parameters; excludes the five calibration modes"><span class="space-sim">7</span><span class="space-ray">3</span></div>
+        </article>
+      </div>
+      <div class="geometry-space-key"><span>7 · similarity</span><span>3 · ray-depth modes</span><span>5 · calibration modes</span></div>
+      <div class="geometry-controls"><label for="geometry-progress">Explore the transformation</label><input id="geometry-progress" type="range" min="0" max="100" step="1" value="100" aria-describedby="geometry-caption" disabled><output id="geometry-value" for="geometry-progress">Transformation applied</output></div>
+      <figcaption id="geometry-caption" class="geometry-caption">Drag the slider back to the prediction, then forward to see each transformation. This is a synthetic geometric illustration, not a reconstruction benchmark. The SL(4) panel shows a calibration-changing mode it permits; calibration-preserving cases also belong to SL(4).</figcaption>
+      <details class="geometry-details"><summary>What are the three extra parameters?</summary><p>In a camera’s normalized coordinates, b = (x, y, 1) and inverse depth ρ = 1/z. The correction is ρ′ = ρ + qᵀb, or z′ = z / (1 + zqᵀb). The coefficient q₃ shifts inverse depth; q₁ and q₂ tilt that shift across the image. The drawing illustrates the q₃ mode. It changes distance along a ray without moving its pixel.</p><p>The 10D family is defined for one calibrated reference camera. In ProManO, a submap shares the similarity and q coefficients, while q acts about each frame’s own optical center. Metric depth and other viewpoints constrain these modes; the system refines them only where observable.</p></details>
+    </figure>
+    <div class="overview-evidence"><div class="evidence-intro"><h3>What this changes in a real map</h3><p>The schematic explains the correction space. This Oxford façade compares the measured reconstruction error of Sim(3) alignment and ProManO against LiDAR ground truth.</p></div>
     <figure class="comparison"><div class="compare-stage" id="compare-stage"><img src="assets/promano-detail.png" alt="Façade reconstruction after ProManO correction." loading="lazy"><div class="compare-base" aria-hidden="true"><img src="assets/sim3-detail.png" alt="" loading="lazy"></div><span class="comp-tag tag-left">Ours w/ Sim(3)</span><span class="comp-tag tag-right">ProManO</span><span class="divider" aria-hidden="true"><i>‹ ›</i></span><input type="range" id="compare" min="0" max="100" value="50" aria-label="Compare Sim(3) alignment on the left and ProManO on the right"></div>
     <figcaption>
       <div class="error-legend facade-legend" id="facade-legend">
@@ -105,7 +172,7 @@
         <span class="gray-key"><i aria-hidden="true"></i>Gray · LiDAR ground truth</span>
       </div>
       Drag to compare the same Oxford façade.<br><a class="textlink region-jump" href="#comparisons">Compare eight more regions ↓</a>
-    </figcaption></figure>
+    </figcaption></figure></div>
   </section>
   <section id="comparisons" class="shell section detail-section" aria-labelledby="comparison-heading">
     <div class="sectionhead"><h2 id="comparison-heading">Reconstruction close-ups</h2></div>

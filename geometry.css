@@ -1,0 +1,132 @@
+/* Calibrated-geometry explainer. Loaded after the shared blue/violet theme. */
+#overview.overview { display: block; }
+.overview-intro { max-width: 850px; }
+.overview-intro .lead { max-width: 62ch; }
+.overview-intro > p:not(.lead) { margin-top: .7rem; max-width: 76ch; }
+.overview-intro .abstract { max-width: 78ch; margin-top: 1rem; }
+.overview-intro .abstract p { margin-top: .7rem; line-height: 1.65; }
+
+.geometry-explainer { width: 100%; margin: 1.75rem 0 0; }
+.geometry-heading { margin-bottom: 1.05rem; }
+.geometry-heading h3 { color: #e7eeff; font: 650 1.3rem/1.35 var(--sans); letter-spacing: -.02em; }
+.geometry-heading p { max-width: 84ch; margin-top: .45rem; color: #b8c8e5; line-height: 1.6; }
+.geometry-panels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.geometry-panel {
+  --geometry-accent: #accbff;
+  --geometry-accent-soft: #6f9fe61a;
+  min-width: 0;
+  padding: 1.15rem;
+  border: 1px solid #829fdd42;
+  border-radius: 10px;
+  background: linear-gradient(155deg, #14223b, #0d172b 74%);
+}
+.geometry-sl4 { --geometry-accent: #ffc394; --geometry-accent-soft: #db9b6a1a; border-color: #d3a28055; }
+.geometry-ours {
+  --geometry-accent: #c3b4ff;
+  --geometry-accent-soft: #a78aff20;
+  border-color: #aaa3f58c;
+  background: linear-gradient(150deg, #1c2546, #161d36 72%);
+  box-shadow: inset 0 0 0 1px #9ca8fa13;
+}
+.geometry-panel-title { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .35rem .65rem; }
+.geometry-panel-title h4 { margin: 0; font: 700 1.18rem/1.35 var(--sans); color: var(--geometry-accent); letter-spacing: -.025em; }
+.geometry-panel-title h4 small { margin-left: .25rem; font-size: .72em; font-weight: 550; }
+.geometry-toggle { display: none; }
+.geometry-dof {
+  flex: none;
+  padding: .16rem .48rem;
+  border: 1px solid #97addd30;
+  border-radius: 4px;
+  background: var(--geometry-accent-soft);
+  color: var(--geometry-accent);
+  font: 650 .85rem/1.45 var(--sans);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.geometry-panel .geometry-tagline { min-height: 2.9rem; margin: .5rem 0 .6rem; color: #c3d1e9; font-size: .95rem; line-height: 1.5; }
+.geometry-svg {
+  display: block;
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  margin: 0 auto;
+  color: #c1cfea;
+  fill: currentColor;
+  font: 16px/1.4 var(--sans);
+}
+.geometry-svg text { font-family: var(--sans); }
+.geometry-svg .g-label { fill: #bfcee8; font-size: 16px; }
+.geometry-svg .big-label { fill: #e4edff; font-size: 17px; font-weight: 600; }
+.geometry-svg .math-label { font-size: 15px; }
+.geometry-svg .g-ray { fill: none; stroke: #7298ce; stroke-width: 1.25; }
+.geometry-svg .g-target { fill: none; stroke: #a8b5ce; stroke-width: 1.7; }
+.geometry-svg .g-input { fill: none; stroke: #ffc08d; stroke-width: 2; }
+.geometry-svg .g-result { fill: #83e0ff; stroke: #83e0ff; stroke-width: 1.5; }
+.geometry-ours .geometry-svg .g-result { fill: #baa9ff; stroke: #baa9ff; }
+.geometry-formula { margin-top: .5rem; padding: .55rem .65rem; border: 1px solid #91a9df29; border-radius: 5px; background: #060d1c55; overflow-x: auto; }
+.geometry-formula code { color: #d7e4ff; font: 500 .92rem/1.65 ui-monospace, "SFMono-Regular", Consolas, monospace; }
+.geometry-panel .geometry-note { margin-top: .65rem; color: #b6c7e5; font-size: .92rem; line-height: 1.55; }
+
+.geometry-spacebar { display: flex; align-items: stretch; width: 100%; min-height: 1.35rem; margin: .85rem 0 .35rem; overflow: hidden; border-radius: 4px; background: #070e1e; }
+.geometry-spacebar > span { min-width: 0; border-right: 2px solid #070e1e; color: #081328; font: 700 .85rem/1.35rem var(--sans); text-align: center; }
+.geometry-spacebar .space-sim { flex: 0 0 46.6667%; background: #9cbeef; }
+.geometry-spacebar .space-ray { flex: 0 0 20%; background: #b5a1f1; }
+.geometry-spacebar .space-cal { flex: 0 0 33.3333%; background: #efb68a; }
+.geometry-space-key { display: flex; flex-wrap: wrap; gap: .45rem 1.2rem; margin-top: .8rem; font-size: .9rem; }
+.geometry-space-key span:nth-child(1) { color: #9cbeef; }
+.geometry-space-key span:nth-child(2) { color: #c3b0ff; }
+.geometry-space-key span:nth-child(3) { color: #efb68a; }
+.geometry-legend { display: flex; flex-wrap: wrap; align-items: center; gap: .65rem 1.25rem; margin: 1.1rem 0; color: #bdcde8; font-size: .9rem; line-height: 1.5; }
+.geometry-legend > span { display: inline-flex; align-items: center; gap: .45rem; }
+.geometry-legend .key-input, .geometry-legend .key-target, .geometry-legend .key-result { position: relative; display: inline-block; flex: 0 0 13px; width: 13px; height: 13px; vertical-align: middle; }
+.geometry-legend .key-input { border: 2px solid #ffc08d; border-radius: 50%; }
+.geometry-legend .key-result { border-radius: 50%; background: #83e0ff; }
+.geometry-legend .key-target::before, .geometry-legend .key-target::after { content: ""; position: absolute; top: calc(50% - .75px); left: 0; width: 100%; height: 1.5px; background: #acb9d1; }
+.geometry-legend .key-target::after { transform: rotate(90deg); }
+
+.geometry-controls { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: .8rem; align-items: center; margin-top: 1.15rem; padding: .7rem 1rem; border: 1px solid #8ca6e03d; border-radius: 7px; background: #122039; }
+.geometry-controls label { color: #e0eaff; font-size: .94rem; font-weight: 600; }
+.geometry-controls input[type=range] { width: 100%; min-width: 0; height: 44px; margin: 0; padding: 0; accent-color: #a4b9ff; cursor: pointer; touch-action: pan-y; }
+.geometry-controls output { min-width: 3.6rem; color: #c3d3ff; font: 650 .92rem/1.5 var(--sans); text-align: right; font-variant-numeric: tabular-nums; }
+.geometry-controls input:focus-visible { outline-color: #80dfff; outline-offset: 3px; }
+.geometry-explainer .geometry-caption { max-width: 100ch; margin-top: .8rem; color: #aebfdd; font-size: .91rem; line-height: 1.6; }
+.geometry-details { margin-top: 1rem; padding-top: .9rem; border-top: 1px solid #819bd52e; }
+.geometry-details summary { width: fit-content; color: #90dfff; font-size: .95rem; font-weight: 600; }
+.geometry-details p { max-width: 96ch; margin-top: .7rem; color: #bdcce6; font-size: .95rem; line-height: 1.65; }
+
+.overview-evidence { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: clamp(1.6rem, 4vw, 3rem); align-items: center; margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid #87a2db30; }
+.evidence-intro { min-width: 0; }
+.evidence-intro h3 { color: #e3ecff; font: 650 1.4rem/1.3 var(--sans); letter-spacing: -.025em; }
+.evidence-intro p { max-width: 63ch; margin-top: .75rem; color: #bdcce6; line-height: 1.65; }
+.overview-evidence .comparison { min-width: 0; width: 100%; }
+
+@media (max-width: 1150px) {
+  .geometry-panels { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  .geometry-panel { padding: 1.15rem; }
+  .geometry-panel .geometry-tagline { min-height: 0; margin-bottom: .4rem; }
+  .geometry-panel .geometry-note { max-width: 82ch; }
+  .geometry-toggle { display: inline-flex; align-items: center; min-height: 40px; padding: .35rem .7rem; margin-bottom: .5rem; border: 1px solid #92b3f25a; border-radius: 5px; background: #213454; color: #e3edff; font-size: .9rem; }
+  .geometry-toggle:hover { background: #2a4066; }
+}
+@media (min-width: 650px) and (max-width: 1150px) {
+  .geometry-panel { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); column-gap: 1.25rem; align-content: center; align-items: start; }
+  .geometry-panel > :not(.geometry-svg) { grid-column: 1; }
+  .geometry-panel .geometry-svg { grid-column: 2; grid-row: 1 / 7; align-self: center; }
+  .geometry-toggle { justify-self: start; }
+  .geometry-panel .geometry-spacebar { align-self: end; }
+}
+@media (max-width: 850px) {
+  .overview-evidence { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; margin-top: 2rem; padding-top: 1.6rem; }
+}
+@media (max-width: 550px) {
+  .geometry-explainer { margin-top: 1.4rem; }
+  .geometry-panel { padding: .9rem; }
+  .geometry-heading h3 { font-size: 1.2rem; }
+  .geometry-heading p { font-size: .95rem; }
+  .geometry-panel-title h4 { font-size: 1.14rem; }
+  .geometry-legend { gap: .55rem 1rem; }
+  .geometry-controls { grid-template-columns: minmax(0, 1fr) auto; gap: .1rem .7rem; padding: .65rem .85rem; }
+  .geometry-controls label { grid-column: 1; grid-row: 1; }
+  .geometry-controls output { grid-column: 2; grid-row: 1; }
+  .geometry-controls input[type=range] { grid-column: 1 / -1; grid-row: 2; }
+}

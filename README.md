@@ -5,6 +5,7 @@ A static research project website for *ProManO: Beyond Sim(3) for Metric Upgrade
 ## Content
 
 - The site uses a dark blue, violet and cyan theme. Scientific figures retain their original colors. The citation section is deferred until the reference is finalized.
+- The overview compares Sim(3), SL(4) and ProManO with an interactive, synthetic single-camera geometry example. It illustrates their 7/15/10 degrees of freedom, fixed-calibration constraint, and along-ray inverse-depth correction. The SL(4) example is one allowed calibration-changing mode, not an estimated SLAM result. The original measured Oxford comparison follows the explanation.
 
 - The opening SLAM replays synchronize original input images, real six-axis IMU measurements, and the estimated camera poses from three recorded ProManO runs: EuRoC V1_02_medium, CID-SIMS Apartment 3, and Oxford Spires Keble College 05. Maps start empty and grow from the recorded per-keyframe depth contributions in acquisition order. Each sequence is accelerated to 20 seconds and uses the final ProManO calibration; it demonstrates reconstruction order, not online inference latency.
 - The replay player provides sequence selection, a shared timeline, playback speed, a camera-follow view, an orbit view, a global overview, and full screen. It pauses outside the viewport and in background tabs. Reduced-motion preferences disable automatic playback. A `?scene=euroc`, `?scene=cid`, or `?scene=oxford` URL selects a replay.
