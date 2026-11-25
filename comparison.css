@@ -1,0 +1,22 @@
+/* One comparison grid, with the original error scale local to each card. */
+#comparisons .sectionhead { flex-wrap: wrap; gap: .45rem 1.2rem; }
+#comparisons .comparison-count { color: #b6c9ea; font-size: .94rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+#comparisons .detail-guide { max-width: 86ch; }
+#comparisons .detail-controls { margin: 1.15rem 0 .85rem; }
+#comparisons .comparison-gray-note { max-width: 101ch; margin: 0 0 1.4rem; color: #aabddd; font-size: .9rem; line-height: 1.6; }
+#comparisons .comparison-availability { margin: 0 0 .7rem; color: #c3b8f5; font-size: .9rem; line-height: 1.55; }
+#comparisons .detail-card { min-width: 0; }
+.comparison-scale { margin-top: .7rem; padding-top: .6rem; border-top: 1px solid #8ca5db2d; }
+.comparison-scale .scale-title { margin-bottom: .4rem; color: #bfceea; font: 550 .875rem/1.45 var(--sans); }
+.comparison-scale .ruler-bar { border-color: #9db1df50; background: #12203a; }
+.comparison-scale .ruler-bar img { width: 100%; height: 7px; }
+.comparison-scale .ruler-ticks { height: 1.55rem; color: #becde8; font: .875rem/1.5 var(--sans); font-variant-numeric: tabular-nums; }
+.comparison-scale .gray-key { margin-top: .2rem; color: #b4c4df; font-size: .875rem; line-height: 1.5; }
+.comparison-scale .gray-key i { width: 12px; height: 12px; flex-basis: 12px; }
+@media (max-width: 680px) {
+  #comparisons .sectionhead { gap: .55rem; }
+  #comparisons .detail-controls { margin: 1rem 0 .75rem; }
+  #comparisons .comparison-gray-note { margin-bottom: 1.2rem; }
+  .comparison-scale { margin-top: .65rem; }
+  .comparison-scale .scale-title { max-width: 100%; }
+}

@@ -9,24 +9,52 @@ for (const slider of document.querySelectorAll('.compare-stage input[type="range
 
 const detailCards = [...document.querySelectorAll('.detail-card')];
 const detailFilters = document.querySelectorAll('[data-detail-filter]');
-const scaleRows = document.querySelectorAll('[data-scale-for]');
+const detailMethod = document.querySelector('#detail-method');
+const comparisonKey = document.querySelector('#compare-key');
+const comparisonCount = document.querySelector('#comparison-count');
+const comparisonAvailability = document.querySelector('#comparison-availability');
+const comparisonSection = document.querySelector('#comparisons');
+const methodNames = Object.fromEntries([...detailMethod.options].map(option => [option.value, option.textContent]));
+let selectedDataset = 'all';
+let displayedMethod = 'sim3';
+let methodRequest = 0;
+
+function supportsMethod(card, method) {
+  return Boolean(card.querySelector('.compare-base img').dataset[method]);
+}
+
+function updateComparisons() {
+  let visible = 0;
+  for (const card of detailCards) {
+    card.hidden = !supportsMethod(card, displayedMethod) || (selectedDataset !== 'all' && card.dataset.dataset !== selectedDataset);
+    if (!card.hidden) visible++;
+  }
+  const count = visible + (visible === 1 ? ' comparison' : ' comparisons');
+  comparisonCount.textContent = count;
+  comparisonAvailability.hidden = displayedMethod !== 'scarf' || !['all', 'Oxford Spires'].includes(selectedDataset);
+  comparisonKey.textContent = count + '. Left: ' + methodNames[displayedMethod] + '. Right: ProManO.';
+}
+
 for (const filter of detailFilters) {
   filter.addEventListener('click', () => {
-    const dataset = filter.dataset.detailFilter;
+    selectedDataset = filter.dataset.detailFilter;
     for (const button of detailFilters) button.setAttribute('aria-pressed', String(button === filter));
-    for (const card of detailCards) card.hidden = dataset !== 'all' && card.dataset.dataset !== dataset;
-    const environment = dataset === 'CID-SIMS' ? 'indoor' : 'outdoor';
-    for (const row of scaleRows) row.hidden = dataset !== 'all' && row.dataset.scaleFor !== environment;
+    updateComparisons();
   });
 }
 
-const detailMethod = document.querySelector('#detail-method');
-const comparisonKey = document.querySelector('#compare-key');
-let displayedMethod = 'sim3';
 detailMethod.addEventListener('change', async () => {
+  const request = ++methodRequest;
   const method = detailMethod.value;
-  const name = detailMethod.selectedOptions[0].textContent;
-  const images = detailCards.map(card => card.querySelector('.compare-base img'));
+  if (method === displayedMethod) {
+    comparisonSection.setAttribute('aria-busy', 'false');
+    updateComparisons();
+    return;
+  }
+  const supportedCards = detailCards.filter(card => supportsMethod(card, method));
+  const images = supportedCards.map(card => card.querySelector('.compare-base img'));
+  comparisonSection.setAttribute('aria-busy', 'true');
+  comparisonKey.textContent = 'Loading ' + methodNames[method] + ' comparisons.';
   try {
     await Promise.all(images.map(image => {
       const preview = new Image();
@@ -34,18 +62,21 @@ detailMethod.addEventListener('change', async () => {
       return preview.decode();
     }));
   } catch {
-    if (detailMethod.value === method) {
-      detailMethod.value = displayedMethod;
-      comparisonKey.textContent = 'The selected comparison could not load. Try again.';
-    }
+    if (request !== methodRequest) return;
+    detailMethod.value = displayedMethod;
+    comparisonSection.setAttribute('aria-busy', 'false');
+    updateComparisons();
+    comparisonKey.textContent = 'The selected comparison could not load. Showing ' + methodNames[displayedMethod] + '. ' + comparisonCount.textContent + '. Left: ' + methodNames[displayedMethod] + '. Right: ProManO.';
     return;
   }
-  if (detailMethod.value !== method) return;
+  if (request !== methodRequest) return;
   for (const image of images) image.src = image.dataset[method];
-  for (const card of detailCards) card.querySelector('.baseline-name').textContent = name;
+  for (const card of supportedCards) card.querySelector('.baseline-name').textContent = methodNames[method];
   displayedMethod = method;
-  comparisonKey.textContent = 'Left: ' + name + '. Right: ProManO.';
+  comparisonSection.setAttribute('aria-busy', 'false');
+  updateComparisons();
 });
+updateComparisons();
 
 const filters = [...document.querySelectorAll('[data-filter]')];
 const thumbnails = [...document.querySelectorAll('.scene')];

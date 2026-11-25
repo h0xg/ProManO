@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="demo.css">
   <link rel="stylesheet" href="theme.css">
   <link rel="stylesheet" href="geometry.css">
+  <link rel="stylesheet" href="comparison.css">
   <script defer src="site.js"></script>
   <script defer src="geometry.js"></script>
   <script defer src="viewer.js"></script>
@@ -97,25 +98,25 @@
     <details class="abstract"><summary>Read the abstract</summary>
     <p>Upgrading feed-forward geometry to metric scale with visual-inertial odometry raises the question of which correction should align dense predictions with sparse metric anchors. The transformations compatible with pre-calibrated intrinsics form a ten-dimensional manifold. Beyond Sim(3), three degrees of freedom locate the plane at infinity. They are invisible in image projections and require metric depth along rays or multi-view constraints to resolve. ProManO estimates the correction using along-ray uncertainty and inlier probabilities in an expectation-maximization procedure. It certifies the similarity synchronization and refines the plane at infinity where it is observable. Experiments on EuRoC, CID-SIMS, Oxford Spires and KITTI-360 show higher mean reconstruction F₁ than Sim(3) alignment on all four datasets.</p></details></div>
     <figure class="geometry-explainer" aria-labelledby="geometry-heading">
-      <header class="geometry-heading"><h3 id="geometry-heading">The difference is in what may move</h3><p>The same predicted points, viewed through one reference camera.</p></header>
+      <header class="geometry-heading"><h3 id="geometry-heading">The difference is how depth is corrected</h3><p>After pose alignment, compare the depth correction in the same reference camera.</p></header>
       <div class="geometry-legend" aria-label="Diagram legend"><span><i class="key-input" aria-hidden="true"></i>Input prediction</span><span><i class="key-target" aria-hidden="true"></i>Metric reference</span><span><i class="key-result" aria-hidden="true"></i>Transformed point</span><span>K · camera intrinsics</span></div>
       <div class="geometry-panels">
         <article class="geometry-panel geometry-sim3">
           <header class="geometry-panel-title"><h4 id="geometry-sim3-title">Sim(3)</h4><span class="geometry-dof">7 DoF</span></header>
-          <p class="geometry-tagline">One scale for the whole scene</p>
+          <p class="geometry-tagline">Along each ray · one shared scale</p>
           <button class="geometry-toggle" data-geometry-toggle type="button" disabled>Show prediction</button>
           <svg class="geometry-svg" viewBox="0 0 330 310" role="img" aria-labelledby="geometry-sim3-title geometry-sim3-desc" data-geometry-model="sim3">
-            <desc id="geometry-sim3-desc">A similarity uses a common rotation, translation and scale. In this example its best fit leaves near and far points displaced from metric references because it cannot undo the non-uniform depth distortion.</desc>
+            <desc id="geometry-sim3-desc">A full similarity has rotation, translation and one scale. With pose already aligned, its scale component moves every point along its camera ray by the same multiplier. This best-fit common scale cannot undo the non-uniform spacing of near and far points.</desc>
             <defs><marker id="geometry-arrow-sim3" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L6 3L0 6" fill="none" stroke="#79d8ff"/></marker></defs>
-            <text x="16" y="25" class="g-label">Rotate · translate · scale uniformly</text>
+            <text x="16" y="25" class="g-label">Same ray · same scale at every depth</text>
             <g class="geometry-reference"></g><g class="geometry-moving"></g>
             <text x="110" y="100" class="g-label">near</text><text x="179" y="68" class="g-label">mid</text><text x="283" y="48" class="g-label">far</text>
             <g class="geometry-calibration"></g><text x="271" y="282" class="g-label">K</text>
             <text x="16" y="282" class="g-label">Depth mismatch remains</text>
             <rect x="222" y="259" width="36" height="36" rx="3" fill="none" stroke="#719cca" stroke-dasharray="3 3" opacity=".5"/>
           </svg>
-          <div class="geometry-formula"><code>X′ = sRX + t</code></div>
-          <p class="geometry-note">Calibration stays fixed, but one common scale cannot correct the unequal spacing of near and far geometry.</p>
+          <div class="geometry-formula"><code>z′ = sz <span>· pose aligned</span></code></div>
+          <p class="geometry-note">The full model has rotation, translation and scale. After pose alignment, every depth is multiplied by the same s. Points stay on their rays, but the depth-dependent bias remains.</p>
           <div class="geometry-spacebar" role="img" aria-label="7 similarity parameters"><span class="space-sim">7</span></div>
         </article>
         <article class="geometry-panel geometry-sl4">
@@ -138,47 +139,34 @@
         </article>
         <article class="geometry-panel geometry-ours">
           <header class="geometry-panel-title"><h4 id="geometry-ours-title">ProManO <small>Ours</small></h4><span class="geometry-dof">10 DoF</span></header>
-          <p class="geometry-tagline">Correct depth; keep calibration</p>
+          <p class="geometry-tagline">Along each ray · depth-dependent correction</p>
           <button class="geometry-toggle" data-geometry-toggle type="button" disabled>Show prediction</button>
           <svg class="geometry-svg" viewBox="0 0 330 310" role="img" aria-labelledby="geometry-ours-title geometry-ours-desc" data-geometry-model="ours">
             <desc id="geometry-ours-desc">The three additional plane-at-infinity coefficients move predicted points along their camera rays onto metric references. The image grid remains unchanged. One shared inverse-depth shift is illustrated here.</desc>
             <defs><marker id="geometry-arrow-ours" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L6 3L0 6" fill="none" stroke="#bca6ff"/></marker></defs>
-            <text x="16" y="25" class="g-label">Same pixel · corrected metric depth</text>
+            <text x="16" y="25" class="g-label">Same ray · depth-dependent scale</text>
             <g class="geometry-reference"></g><g class="geometry-moving"></g>
             <text x="110" y="100" class="g-label">near</text><text x="179" y="68" class="g-label">mid</text><text x="283" y="48" class="g-label">far</text>
             <g class="geometry-calibration"></g><text x="271" y="282" class="g-label">K</text>
             <text x="16" y="282" class="g-label">Points move along their rays</text>
             <rect x="222" y="259" width="36" height="36" rx="3" fill="none" stroke="#719cca" stroke-dasharray="3 3" opacity=".5"/>
           </svg>
-          <div class="geometry-formula"><code>ρ′ = ρ + q₁x + q₂y + q₃</code></div>
-          <p class="geometry-note">A similarity plus three shared plane-at-infinity parameters. Near and far depths can change by different amounts while K stays fixed.</p>
+          <div class="geometry-formula"><code>z′ = sz / (1 + zqᵀb)</code></div>
+          <p class="geometry-note">After pose alignment, the multiplier is s / (1 + zqᵀb), so it can vary with depth and viewing direction. Three shared q parameters add this freedom while K stays fixed.</p>
           <div class="geometry-spacebar" role="img" aria-label="7 similarity plus 3 depth parameters; excludes the five calibration modes"><span class="space-sim">7</span><span class="space-ray">3</span></div>
         </article>
       </div>
       <div class="geometry-space-key"><span>7 · similarity</span><span>3 · ray-depth modes</span><span>5 · calibration modes</span></div>
       <div class="geometry-controls"><label for="geometry-progress">Explore the transformation</label><input id="geometry-progress" type="range" min="0" max="100" step="1" value="100" aria-describedby="geometry-caption" disabled><output id="geometry-value" for="geometry-progress">Transformation applied</output></div>
-      <figcaption id="geometry-caption" class="geometry-caption">Drag the slider back to the prediction, then forward to see each transformation. This is a synthetic geometric illustration, not a reconstruction benchmark. The SL(4) panel shows a calibration-changing mode it permits; calibration-preserving cases also belong to SL(4).</figcaption>
-      <details class="geometry-details"><summary>What are the three extra parameters?</summary><p>In a camera’s normalized coordinates, b = (x, y, 1) and inverse depth ρ = 1/z. The correction is ρ′ = ρ + qᵀb, or z′ = z / (1 + zqᵀb). The coefficient q₃ shifts inverse depth; q₁ and q₂ tilt that shift across the image. The drawing illustrates the q₃ mode. It changes distance along a ray without moving its pixel.</p><p>The 10D family is defined for one calibrated reference camera. In ProManO, a submap shares the similarity and q coefficients, while q acts about each frame’s own optical center. Metric depth and other viewpoints constrain these modes; the system refines them only where observable.</p></details>
+      <figcaption id="geometry-caption" class="geometry-caption">Both Sim(3) scaling and ProManO’s extra correction act along rays. Pose is already aligned here to isolate their depth behavior: a common scale versus a depth-dependent multiplier. Drag the slider to explore this synthetic illustration. SL(4) shows one allowed calibration-changing mode, not an inevitable reconstruction result.</figcaption>
+      <details class="geometry-details"><summary>What are the three extra parameters?</summary><p>In a camera’s normalized coordinates, b = (x, y, 1) and inverse depth ρ = 1/z. Before the common similarity scale, the extra ray correction is ρ_corr = ρ + qᵀb. After that scale, the pose-aligned depth is z′ = sz / (1 + zqᵀb). The coefficient q₃ shifts inverse depth; q₁ and q₂ tilt that shift across the image. The ProManO drawing illustrates the q₃ mode with s = 1. It changes distance along a ray without moving its pixel.</p><p>The 10D family is defined for one calibrated reference camera. In ProManO, a submap shares the similarity and q coefficients, while q acts about each frame’s own optical center. Metric depth and other viewpoints constrain these modes; the system refines them only where observable.</p></details>
     </figure>
-    <div class="overview-evidence"><div class="evidence-intro"><h3>What this changes in a real map</h3><p>The schematic explains the correction space. This Oxford façade compares the measured reconstruction error of Sim(3) alignment and ProManO against LiDAR ground truth.</p></div>
-    <figure class="comparison"><div class="compare-stage" id="compare-stage"><img src="assets/promano-detail.png" alt="Façade reconstruction after ProManO correction." loading="lazy"><div class="compare-base" aria-hidden="true"><img src="assets/sim3-detail.png" alt="" loading="lazy"></div><span class="comp-tag tag-left">Ours w/ Sim(3)</span><span class="comp-tag tag-right">ProManO</span><span class="divider" aria-hidden="true"><i>‹ ›</i></span><input type="range" id="compare" min="0" max="100" value="50" aria-label="Compare Sim(3) alignment on the left and ProManO on the right"></div>
-    <figcaption>
-      <div class="error-legend facade-legend" id="facade-legend">
-        <div class="scale-block">
-          <strong class="scale-title">Distance to LiDAR ground truth (m)</strong>
-          <div class="ruler-bar" aria-hidden="true"><img src="assets/facade-error-scale.png" alt=""></div>
-          <div class="ruler-ticks"><span style="--pos:0%">0</span><span style="--pos:50%">1.5</span><span style="--pos:100%">≥3</span></div>
-        </div>
-        <span class="gray-key"><i aria-hidden="true"></i>Gray · LiDAR ground truth</span>
-      </div>
-      Drag to compare the same Oxford façade.<br><a class="textlink region-jump" href="#comparisons">Compare eight more regions ↓</a>
-    </figcaption></figure></div>
   </section>
   <section id="comparisons" class="shell section detail-section" aria-labelledby="comparison-heading">
-    <div class="sectionhead"><h2 id="comparison-heading">Reconstruction close-ups</h2></div>
-    <p class="detail-guide"><span id="compare-instruction">Drag to compare</span> the same region. Blue indicates lower surface error and red higher.</p>
+    <div class="sectionhead"><h2 id="comparison-heading">Reconstruction comparisons</h2><p id="comparison-count" class="comparison-count">9 comparisons</p></div>
+    <p class="detail-guide"><span id="compare-instruction">Drag to compare</span> the same view. Blue indicates lower error and red higher; use the local scale on each card.</p>
     <div class="detail-controls">
-      <div class="filters detail-filters" role="group" aria-label="Filter close-ups by dataset">
+      <div class="filters detail-filters" role="group" aria-label="Filter comparisons by dataset">
         <button type="button" data-detail-filter="all" aria-pressed="true">All scenes</button>
         <button type="button" data-detail-filter="KITTI-360" aria-pressed="false">KITTI-360</button>
         <button type="button" data-detail-filter="Oxford Spires" aria-pressed="false">Oxford Spires</button>
@@ -186,17 +174,26 @@
       </div>
       <div class="detail-baseline"><label for="detail-method">Compare ProManO with</label><select id="detail-method"><option value="sim3">Ours w/ Sim(3)</option><option value="scarf">Ours w/ ScaRF-SLAM</option></select></div>
     </div>
-    <div class="error-legend details-legend" id="surface-legend" role="group" aria-label="Surface error color scale">
-      <div class="scale-block">
-        <strong class="scale-title">Distance from ground truth to reconstruction (m)</strong>
-        <div class="ruler-bar" aria-hidden="true"><img src="assets/surface-error-scale.png" alt=""></div>
-        <div class="ruler-row" data-scale-for="outdoor"><span class="ruler-name">Outdoor</span><div class="ruler-ticks"><span style="--pos:0%">0</span><span style="--pos:20%">0.2</span><span style="--pos:50%">0.5</span><span style="--pos:100%">≥1</span></div></div>
-        <div class="ruler-row" data-scale-for="indoor"><span class="ruler-name">Indoor</span><div class="ruler-ticks"><span style="--pos:0%">0</span><span style="--pos:25%">0.05</span><span style="--pos:50%">0.1</span><span style="--pos:100%">≥0.2</span></div></div>
-      </div>
-      <span class="gray-key"><i aria-hidden="true"></i><span>Gray · Ground-truth surface missed by all three methods</span></span>
-    </div>
-    <p class="sr-only" id="compare-key" aria-live="polite">Left: Ours w/ Sim(3). Right: ProManO.</p>
+    <p class="comparison-availability" id="comparison-availability" hidden>The Oxford façade is available with Sim(3) only.</p>
+    <p class="comparison-gray-note">In the region close-ups, gray marks ground-truth surface missed by all three methods. In the façade, gray is LiDAR ground truth.</p>
+    <p class="sr-only" id="compare-key" aria-live="polite">9 comparisons. Left: Ours w/ Sim(3). Right: ProManO.</p>
     <div class="detail-grid">
+      <figure class="detail-card facade-card" data-dataset="Oxford Spires">
+        <figcaption id="label-oxford-facade"><span>Oxford Spires</span>Façade</figcaption>
+        <div class="detail-methods" aria-hidden="true"><span class="baseline-name">Ours w/ Sim(3)</span><span>ProManO</span></div>
+        <div class="compare-stage" id="compare-stage" style="aspect-ratio:533/287">
+          <img src="assets/promano-detail.png" width="533" height="287" alt="ProManO Oxford façade reconstruction with distance to LiDAR ground truth." loading="lazy">
+          <div class="compare-base" aria-hidden="true"><img src="assets/sim3-detail.png" data-sim3="assets/sim3-detail.png" width="533" height="287" alt="" loading="lazy"></div>
+          <span class="divider" aria-hidden="true"><i>‹ ›</i></span>
+          <input type="range" id="compare" min="0" max="100" value="50" aria-labelledby="compare-instruction label-oxford-facade" aria-describedby="compare-key scale-oxford-facade">
+        </div>
+        <div class="comparison-scale" id="scale-oxford-facade" role="group" aria-label="Distance to LiDAR ground truth (m)">
+          <strong class="scale-title">Distance to LiDAR ground truth (m)</strong>
+          <div class="ruler-bar" aria-hidden="true"><img src="assets/facade-error-scale.png" alt="" loading="lazy"></div>
+          <div class="ruler-ticks"><span style="--pos:0%">0</span><span style="--pos:50%">1.5</span><span style="--pos:100%">≥3</span></div>
+          <span class="gray-key"><i aria-hidden="true"></i>Gray · LiDAR ground truth</span>
+        </div>
+      </figure>
       <figure class="detail-card" data-dataset="KITTI-360">
         <figcaption id="label-kitti0000-a"><span>KITTI-360</span>Drive 0000 · Region A</figcaption>
         <div class="detail-methods" aria-hidden="true"><span class="baseline-name">Ours w/ Sim(3)</span><span>ProManO</span></div>
@@ -204,7 +201,12 @@
           <img src="assets/cmp-kitti0000-a-promano.png" width="398" height="106" alt="ProManO reconstruction of KITTI-360 · Drive 0000 · Region A." loading="lazy">
           <div class="compare-base" aria-hidden="true"><img src="assets/cmp-kitti0000-a-sim3.png" data-sim3="assets/cmp-kitti0000-a-sim3.png" data-scarf="assets/cmp-kitti0000-a-scarf.png" width="398" height="106" alt="" loading="lazy"></div>
           <span class="divider" aria-hidden="true"><i>‹ ›</i></span>
-          <input type="range" min="0" max="100" value="50" aria-labelledby="compare-instruction label-kitti0000-a" aria-describedby="compare-key">
+          <input type="range" min="0" max="100" value="50" aria-labelledby="compare-instruction label-kitti0000-a" aria-describedby="compare-key scale-kitti0000-a">
+        </div>
+        <div class="comparison-scale" id="scale-kitti0000-a" role="group" aria-label="Ground truth → reconstruction distance (m)">
+          <strong class="scale-title">Ground truth → reconstruction distance (m)</strong>
+          <div class="ruler-bar" aria-hidden="true"><img src="assets/surface-error-scale.png" alt="" loading="lazy"></div>
+          <div class="ruler-ticks"><span style="--pos:0%">0</span><span style="--pos:20%">0.2</span><span style="--pos:50%">0.5</span><span style="--pos:100%">≥1</span></div>
         </div>
       </figure>
       <figure class="detail-card" data-dataset="KITTI-360">
@@ -214,7 +216,12 @@
           <img src="assets/cmp-kitti0000-b-promano.png" width="398" height="106" alt="ProManO reconstruction of KITTI-360 · Drive 0000 · Region B." loading="lazy">
           <div class="compare-base" aria-hidden="true"><img src="assets/cmp-kitti0000-b-sim3.png" data-sim3="assets/cmp-kitti0000-b-sim3.png" data-scarf="assets/cmp-kitti0000-b-scarf.png" width="398" height="106" alt="" loading="lazy"></div>
           <span class="divider" aria-hidden="true"><i>‹ ›</i></span>
-          <input type="range" min="0" max="100" value="50" aria-labelledby="compare-instruction label-kitti0000-b" aria-describedby="compare-key">
+          <input type="range" min="0" max="100" value="50" aria-labelledby="compare-instruction label-kitti0000-b" aria-describedby="compare-key scale-kitti0000-b">
+        </div>
+        <div class="comparison-scale" id="scale-kitti0000-b" role="group" aria-label="Ground truth → reconstruction distance (m)">
+          <strong class="scale-title">Ground truth → reconstruction distance (m)</strong>
+          <div class="ruler-bar" aria-hidden="true"><img src="assets/surface-error-scale.png" alt="" loading="lazy"></div>
+          <div class="ruler-ticks"><span style="--pos:0%">0</span><span style="--pos:20%">0.2</span><span style="--pos:50%">0.5</span><span style="--pos:100%">≥1</span></div>
         </div>
       </figure>
       <figure class="detail-card" data-dataset="KITTI-360">
@@ -224,7 +231,12 @@
           <img src="assets/cmp-kitti0009-a-promano.png" width="397" height="106" alt="ProManO reconstruction of KITTI-360 · Drive 0009 · Region A." loading="lazy">
           <div class="compare-base" aria-hidden="true"><img src="assets/cmp-kitti0009-a-sim3.png" data-sim3="assets/cmp-kitti0009-a-sim3.png" data-scarf="assets/cmp-kitti0009-a-scarf.png" width="397" height="106" alt="" loading="lazy"></div>
           <span class="divider" aria-hidden="true"><i>‹ ›</i></span>
-          <input type="range" min="0" max="100" value="50" aria-labelledby="compare-instruction label-kitti0009-a" aria-describedby="compare-key">
+          <input type="range" min="0" max="100" value="50" aria-labelledby="compare-instruction label-kitti0009-a" aria-describedby="compare-key scale-kitti0009-a">
+        </div>
+        <div class="comparison-scale" id="scale-kitti0009-a" role="group" aria-label="Ground truth → reconstruction distance (m)">
+          <strong class="scale-title">Ground truth → reconstruction distance (m)</strong>
+          <div class="ruler-bar" aria-hidden="true"><img src="assets/surface-error-scale.png" alt="" loading="lazy"></div>
+          <div class="ruler-ticks"><span style="--pos:0%">0</span><span style="--pos:20%">0.2</span><span style="--pos:50%">0.5</span><span style="--pos:100%">≥1</span></div>
         </div>
       </figure>
       <figure class="detail-card" data-dataset="KITTI-360">
@@ -234,7 +246,12 @@
           <img src="assets/cmp-kitti0009-b-promano.png" width="398" height="106" alt="ProManO reconstruction of KITTI-360 · Drive 0009 · Region B." loading="lazy">
           <div class="compare-base" aria-hidden="true"><img src="assets/cmp-kitti0009-b-sim3.png" data-sim3="assets/cmp-kitti0009-b-sim3.png" data-scarf="assets/cmp-kitti0009-b-scarf.png" width="398" height="106" alt="" loading="lazy"></div>
           <span class="divider" aria-hidden="true"><i>‹ ›</i></span>
-          <input type="range" min="0" max="100" value="50" aria-labelledby="compare-instruction label-kitti0009-b" aria-describedby="compare-key">
+          <input type="range" min="0" max="100" value="50" aria-labelledby="compare-instruction label-kitti0009-b" aria-describedby="compare-key scale-kitti0009-b">
+        </div>
+        <div class="comparison-scale" id="scale-kitti0009-b" role="group" aria-label="Ground truth → reconstruction distance (m)">
+          <strong class="scale-title">Ground truth → reconstruction distance (m)</strong>
+          <div class="ruler-bar" aria-hidden="true"><img src="assets/surface-error-scale.png" alt="" loading="lazy"></div>
+          <div class="ruler-ticks"><span style="--pos:0%">0</span><span style="--pos:20%">0.2</span><span style="--pos:50%">0.5</span><span style="--pos:100%">≥1</span></div>
         </div>
       </figure>
       <figure class="detail-card" data-dataset="Oxford Spires">
@@ -244,7 +261,12 @@
           <img src="assets/cmp-oxford-cc02-a-promano.png" width="298" height="174" alt="ProManO reconstruction of Oxford Spires · Christ Church 02 · Region A." loading="lazy">
           <div class="compare-base" aria-hidden="true"><img src="assets/cmp-oxford-cc02-a-sim3.png" data-sim3="assets/cmp-oxford-cc02-a-sim3.png" data-scarf="assets/cmp-oxford-cc02-a-scarf.png" width="298" height="174" alt="" loading="lazy"></div>
           <span class="divider" aria-hidden="true"><i>‹ ›</i></span>
-          <input type="range" min="0" max="100" value="50" aria-labelledby="compare-instruction label-oxford-cc02-a" aria-describedby="compare-key">
+          <input type="range" min="0" max="100" value="50" aria-labelledby="compare-instruction label-oxford-cc02-a" aria-describedby="compare-key scale-oxford-cc02-a">
+        </div>
+        <div class="comparison-scale" id="scale-oxford-cc02-a" role="group" aria-label="Ground truth → reconstruction distance (m)">
+          <strong class="scale-title">Ground truth → reconstruction distance (m)</strong>
+          <div class="ruler-bar" aria-hidden="true"><img src="assets/surface-error-scale.png" alt="" loading="lazy"></div>
+          <div class="ruler-ticks"><span style="--pos:0%">0</span><span style="--pos:20%">0.2</span><span style="--pos:50%">0.5</span><span style="--pos:100%">≥1</span></div>
         </div>
       </figure>
       <figure class="detail-card" data-dataset="Oxford Spires">
@@ -254,7 +276,12 @@
           <img src="assets/cmp-oxford-cc02-b-promano.png" width="298" height="174" alt="ProManO reconstruction of Oxford Spires · Christ Church 02 · Region B." loading="lazy">
           <div class="compare-base" aria-hidden="true"><img src="assets/cmp-oxford-cc02-b-sim3.png" data-sim3="assets/cmp-oxford-cc02-b-sim3.png" data-scarf="assets/cmp-oxford-cc02-b-scarf.png" width="298" height="174" alt="" loading="lazy"></div>
           <span class="divider" aria-hidden="true"><i>‹ ›</i></span>
-          <input type="range" min="0" max="100" value="50" aria-labelledby="compare-instruction label-oxford-cc02-b" aria-describedby="compare-key">
+          <input type="range" min="0" max="100" value="50" aria-labelledby="compare-instruction label-oxford-cc02-b" aria-describedby="compare-key scale-oxford-cc02-b">
+        </div>
+        <div class="comparison-scale" id="scale-oxford-cc02-b" role="group" aria-label="Ground truth → reconstruction distance (m)">
+          <strong class="scale-title">Ground truth → reconstruction distance (m)</strong>
+          <div class="ruler-bar" aria-hidden="true"><img src="assets/surface-error-scale.png" alt="" loading="lazy"></div>
+          <div class="ruler-ticks"><span style="--pos:0%">0</span><span style="--pos:20%">0.2</span><span style="--pos:50%">0.5</span><span style="--pos:100%">≥1</span></div>
         </div>
       </figure>
       <figure class="detail-card" data-dataset="Oxford Spires">
@@ -264,7 +291,12 @@
           <img src="assets/cmp-oxford-cc03-promano.png" width="298" height="174" alt="ProManO reconstruction of Oxford Spires · Christ Church 03." loading="lazy">
           <div class="compare-base" aria-hidden="true"><img src="assets/cmp-oxford-cc03-sim3.png" data-sim3="assets/cmp-oxford-cc03-sim3.png" data-scarf="assets/cmp-oxford-cc03-scarf.png" width="298" height="174" alt="" loading="lazy"></div>
           <span class="divider" aria-hidden="true"><i>‹ ›</i></span>
-          <input type="range" min="0" max="100" value="50" aria-labelledby="compare-instruction label-oxford-cc03" aria-describedby="compare-key">
+          <input type="range" min="0" max="100" value="50" aria-labelledby="compare-instruction label-oxford-cc03" aria-describedby="compare-key scale-oxford-cc03">
+        </div>
+        <div class="comparison-scale" id="scale-oxford-cc03" role="group" aria-label="Ground truth → reconstruction distance (m)">
+          <strong class="scale-title">Ground truth → reconstruction distance (m)</strong>
+          <div class="ruler-bar" aria-hidden="true"><img src="assets/surface-error-scale.png" alt="" loading="lazy"></div>
+          <div class="ruler-ticks"><span style="--pos:0%">0</span><span style="--pos:20%">0.2</span><span style="--pos:50%">0.5</span><span style="--pos:100%">≥1</span></div>
         </div>
       </figure>
       <figure class="detail-card" data-dataset="CID-SIMS">
@@ -274,7 +306,12 @@
           <img src="assets/cmp-cid-floor3-promano.png" width="243" height="174" alt="ProManO reconstruction of CID-SIMS · Floor 3." loading="lazy">
           <div class="compare-base" aria-hidden="true"><img src="assets/cmp-cid-floor3-sim3.png" data-sim3="assets/cmp-cid-floor3-sim3.png" data-scarf="assets/cmp-cid-floor3-scarf.png" width="243" height="174" alt="" loading="lazy"></div>
           <span class="divider" aria-hidden="true"><i>‹ ›</i></span>
-          <input type="range" min="0" max="100" value="50" aria-labelledby="compare-instruction label-cid-floor3" aria-describedby="compare-key">
+          <input type="range" min="0" max="100" value="50" aria-labelledby="compare-instruction label-cid-floor3" aria-describedby="compare-key scale-cid-floor3">
+        </div>
+        <div class="comparison-scale" id="scale-cid-floor3" role="group" aria-label="Ground truth → reconstruction distance (m)">
+          <strong class="scale-title">Ground truth → reconstruction distance (m)</strong>
+          <div class="ruler-bar" aria-hidden="true"><img src="assets/surface-error-scale.png" alt="" loading="lazy"></div>
+          <div class="ruler-ticks"><span style="--pos:0%">0</span><span style="--pos:25%">0.05</span><span style="--pos:50%">0.1</span><span style="--pos:100%">≥0.2</span></div>
         </div>
       </figure>
     </div>

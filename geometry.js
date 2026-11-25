@@ -13,19 +13,16 @@
   const depths = [1, 1.9, 2.9], slopes = [-0.44, 0, 0.44];
   const metric = depths.flatMap(z => slopes.map(b => [z, b * z]));
   const predicted = metric.map(([z, y]) => [z / (1 + distortion * z), y / (1 + distortion * z)]);
-  const mean = points => points.reduce((m, p) => [m[0] + p[0] / points.length, m[1] + p[1] / points.length], [0, 0]);
-  const pm = mean(predicted), gm = mean(metric);
-  // For this symmetric construction the optimal similarity rotation is identity.
-  // Fit its common scale and translation to every point, rather than one anchor.
+  // Pose is already aligned in this illustration. Isolate the scale component
+  // of Sim(3), fitting its one multiplier to every point without moving the camera.
   let numerator = 0, denominator = 0;
   predicted.forEach((p, i) => {
     for (let j = 0; j < 2; j++) {
-      numerator += (p[j] - pm[j]) * (metric[i][j] - gm[j]);
-      denominator += (p[j] - pm[j]) ** 2;
+      numerator += p[j] * metric[i][j];
+      denominator += p[j] ** 2;
     }
   });
   const scale = numerator / denominator;
-  const translation = [gm[0] - scale * pm[0], gm[1] - scale * pm[1]];
   const screen = p => [camera[0] + unit * p[0], camera[1] + unit * p[1]];
   const point = p => p.map(v => v.toFixed(2)).join(',');
   const add = (parent, tag, attrs) => {
@@ -67,11 +64,10 @@
   function render() {
     const amount = Number(slider.value) / 100;
     for (const panel of panels) {
-      let center = [0, 0];
+      const center = [0, 0];
       const corrected = predicted.map(p => {
         if (panel.model === 'sim3') {
-          center = translation.map(v => amount * v);
-          return p.map((v, j) => (1 + amount * (scale - 1)) * v + center[j]);
+          return p.map(v => (1 + amount * (scale - 1)) * v);
         }
         const divisor = 1 - distortion * amount * p[0];
         const z = p[0] / divisor, y = p[1] / divisor;
