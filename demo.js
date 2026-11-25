@@ -31,7 +31,8 @@
   let loading = false;
   let playing = false;
   let visible = false;
-  let autoStart = false;
+  // Keep the playback choice separate from temporary offscreen/tab pauses.
+  let playbackRequested = false;
   let inputHealthy = true;
   let frameIndex = 0;
   let time = 0;
@@ -92,11 +93,15 @@
     video.pause();
     updateControls();
   }
+  function pause() {
+    playbackRequested = false;
+    stop();
+  }
   function ensureAnimation() {
     if (!animation && visible && !document.hidden) animation = requestAnimationFrame(tick);
   }
   async function start() {
-    autoStart = false;
+    playbackRequested = true;
     if (!loaded || !visible || document.hidden) return;
     if (time >= entry.duration - 0.05) seek(0);
     const request = generation;
@@ -109,7 +114,7 @@
       catch (error) {
         if (request !== generation || !playing) return;
         if (error.name === 'NotAllowedError') {
-          stop();
+          pause();
           status('Press Play to start the synchronized offline replay.');
         } else if (error.name !== 'AbortError') {
           inputFailed();
@@ -381,15 +386,19 @@
       if (inputHealthy) time = clamp(video.currentTime, 0, entry.duration);
       else time = Math.min(entry.duration, time + Math.min((now - previousTick) / 1000, 0.2) * speed);
       setFrameFromTime();
-      if (time >= entry.duration - 0.02 || (inputHealthy && video.ended)) {
-        time = entry.duration;
-        stop();
-      }
+      if (time >= entry.duration - 0.02 || (inputHealthy && video.ended)) restartReplay();
       updateControls();
     }
     previousTick = now;
     if (dirty) { render(); renderOverview(); dirty = false; }
     if (playing) ensureAnimation();
+  }
+  function restartReplay() {
+    if (!loaded || !playing) return;
+    // Restart the shared timeline, so camera, growing map and IMU loop together.
+    seek(0);
+    previousTick = performance.now();
+    if (inputHealthy && video.paused) start();
   }
 
   function setFollowing(enabled) {
@@ -460,7 +469,7 @@
     stop();
     loaded = false;
     loading = true;
-    autoStart = !reducedMotion.matches;
+    playbackRequested = !reducedMotion.matches;
     inputHealthy = true;
     entry = next;
     frameIndex = 0;
@@ -521,11 +530,11 @@
       else status(rendererReady ? defaultStatus : 'Interactive 3D unavailable · static preview and recorded camera input.');
       dirty = true;
       ensureAnimation();
-      if (autoStart && visible && !document.hidden) start();
+      if (playbackRequested && visible && !document.hidden) start();
     } catch (error) {
       if (signal.aborted || request !== generation) return;
       loading = false;
-      autoStart = false;
+      playbackRequested = false;
       video.pause();
       root.setAttribute('aria-busy', 'false');
       status(`${error.message} Select a scene to retry.`);
@@ -558,7 +567,7 @@
     } catch (error) { loading = false; status(`${error.message} Reload the page to retry.`); }
   }
 
-  playButton.addEventListener('click', () => { if (playing) stop(); else start(); });
+  playButton.addEventListener('click', () => { if (playing) pause(); else start(); });
   progress.addEventListener('input', () => seek(Number(progress.value) / 1000 * (entry?.duration || 0)));
   get('speed').addEventListener('change', () => { speed = Number(get('speed').value) || 1; video.playbackRate = speed; });
   followButton.addEventListener('click', () => { viewAdjusted = true; setFollowing(!following); });
@@ -576,7 +585,7 @@
   video.addEventListener('error', () => { if (entry && video.getAttribute('src')) inputFailed(); });
   video.addEventListener('loadedmetadata', () => { if (loaded && time > 0) video.currentTime = Math.min(time, video.duration - 0.01); });
   video.addEventListener('loadeddata', () => video.classList.add('is-ready'));
-  video.addEventListener('ended', () => { if (loaded) { time = entry.duration; setFrameFromTime(); stop(); dirty = true; ensureAnimation(); } });
+  video.addEventListener('ended', () => { restartReplay(); });
   video.addEventListener('playing', () => {
     if (inputHealthy && loaded) status(!hasMapTimeline ? 'Map-update timing unavailable · recorded camera input and trajectory replay.' : rendererReady ? defaultStatus : 'Interactive 3D unavailable · static preview and recorded camera input.');
   });
@@ -605,7 +614,7 @@
     dirty = true; ensureAnimation();
   }, { passive: false });
   canvas.addEventListener('keydown', (event) => {
-    if (event.code === 'Space') { event.preventDefault(); if (playing) stop(); else start(); }
+    if (event.code === 'Space') { event.preventDefault(); if (playing) pause(); else start(); }
     if (['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'].includes(event.code)) {
       viewAdjusted = true;
       event.preventDefault(); setFollowing(false);
@@ -625,14 +634,14 @@
     if (event.code === 'KeyF') { viewAdjusted = true; setFollowing(!following); }
   });
   canvas.addEventListener('webglcontextlost', (event) => {
-    event.preventDefault(); stop(); rendererReady = false; canvas.hidden = true; poster.hidden = false;
+    event.preventDefault(); pause(); rendererReady = false; canvas.hidden = true; poster.hidden = false;
     status('The 3D graphics context was interrupted. Reload to restore the interactive view.');
   });
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) { autoStart = false; stop(); cancelAnimationFrame(animation); animation = 0; }
-    else { dirty = true; ensureAnimation(); }
+    if (document.hidden) { stop(); cancelAnimationFrame(animation); animation = 0; }
+    else { dirty = true; ensureAnimation(); if (playbackRequested && loaded && visible) start(); }
   });
-  reducedMotion.addEventListener('change', () => { if (reducedMotion.matches) { autoStart = false; stop(); } });
+  reducedMotion.addEventListener('change', () => { if (reducedMotion.matches) pause(); });
   const resize = () => {
     if (loaded) {
       buildOverview();
@@ -647,8 +656,11 @@
     resize();
   });
   window.addEventListener('pagehide', (event) => {
-    autoStart = false; stop();
+    stop();
     if (!event.persisted) { controller?.abort(); deleteBuffers(); }
+  });
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted && playbackRequested && loaded && visible && !document.hidden) start();
   });
   setControlsEnabled(false);
   updateControls();
@@ -659,8 +671,8 @@
     lazyObserver.observe(root);
     new IntersectionObserver(([event]) => {
       visible = event.isIntersecting;
-      if (!visible) { if (playing) autoStart = false; stop(); cancelAnimationFrame(animation); animation = 0; }
-      else { dirty = true; ensureAnimation(); if (autoStart && loaded && !document.hidden) start(); }
+      if (!visible) { stop(); cancelAnimationFrame(animation); animation = 0; }
+      else { dirty = true; ensureAnimation(); if (playbackRequested && loaded && !document.hidden) start(); }
     }, { threshold: 0.01 }).observe(get('player') || root);
   } else { visible = true; initialize(); }
 })();

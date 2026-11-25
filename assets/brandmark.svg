@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" fill="none">
+  <title>ProManO</title>
+  <desc>A geometric P with a point on a projection ray.</desc>
+  <defs>
+    <linearGradient id="surface" x1="5" y1="3" x2="31" y2="35" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#192b48"/>
+      <stop offset="1" stop-color="#10182d"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="3" y1="3" x2="33" y2="33" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#72d9ff" stop-opacity=".58"/>
+      <stop offset="1" stop-color="#ac8ce9" stop-opacity=".4"/>
+    </linearGradient>
+    <linearGradient id="mark" x1="9" y1="27" x2="26" y2="9" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#73e0ff"/>
+      <stop offset=".55" stop-color="#8ebcff"/>
+      <stop offset="1" stop-color="#b79aff"/>
+    </linearGradient>
+  </defs>
+  <rect x="1" y="1" width="34" height="34" rx="9" fill="url(#surface)" stroke="url(#edge)"/>
+  <path d="M10 28V8h9.2a6 6 0 0 1 0 12h-4.4" stroke="url(#mark)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="m10 28 9.2-14" stroke="#a7dfff" stroke-opacity=".8" stroke-width="1.35" stroke-linecap="round"/>
+  <circle cx="19.2" cy="14" r="1.85" fill="#d7f4ff"/>
+</svg>

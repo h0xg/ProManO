@@ -38,13 +38,15 @@ input:focus-visible, select:focus-visible, canvas:focus-visible {
   -webkit-backdrop-filter: blur(16px);
 }
 .brand { font-family: var(--sans); font-weight: 750; color: #e2eaff; }
-.brandmark i {
-  background: #122c50;
-  border-color: #7bdbff;
-  box-shadow: 0 0 10px #3ba9ff18;
+.brandmark {
+  display: block;
+  position: static;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  transform: none;
 }
-.brandmark i:nth-child(2) { background: #334a8d; border-color: #94b4ff; }
-.brandmark i:nth-child(3) { background: #6e4eb2; border-color: #c3a3ff; }
 .navlinks a { color: #c4d0e8; }
 .navlinks a:hover, .navpaper:hover, .footer a:hover, .textlink:hover {
   color: #a4eaff;
